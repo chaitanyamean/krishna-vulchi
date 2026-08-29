@@ -1,0 +1,51 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  date: Date;
+  tags?: string[];
+}
+const { href, title, description, date, tags = [] } = Astro.props;
+const formatted = date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+---
+
+<a class="post-card" href={href}>
+  <span class="post-card__date meta">{formatted}</span>
+  <span class="post-card__title">{title}</span>
+  <p class="post-card__desc">{description}</p>
+  {tags.length > 0 && (
+    <div class="post-card__tags">
+      {tags.map((t) => <span class="tag">{t}</span>)}
+    </div>
+  )}
+</a>
+
+<style>
+  .post-card {
+    display: block;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .post-card:first-of-type { padding-top: 0; }
+  .post-card:hover .post-card__title { color: var(--amber); }
+  .post-card__date {
+    display: block;
+    margin-bottom: 6px;
+  }
+  .post-card__title {
+    display: block;
+    font-family: var(--display);
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .post-card__desc {
+    margin: 6px 0 0;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .post-card__tags { margin-top: 10px; }
+</style>

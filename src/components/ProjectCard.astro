@@ -1,0 +1,55 @@
+---
+interface Props {
+  name: string;
+  tagline: string;
+  stack: string[];
+  href?: string;
+  status?: string;
+}
+const { name, tagline, stack, href, status } = Astro.props;
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag class="project-card" href={href}>
+  <div class="project-card__top">
+    <span class="project-card__name">{name}</span>
+    {status && <span class="eyebrow">{status}</span>}
+  </div>
+  <p class="project-card__tagline">{tagline}</p>
+  <div class="project-card__stack">
+    {stack.map((s) => <span class="tag">{s}</span>)}
+  </div>
+</Tag>
+
+<style>
+  .project-card {
+    display: block;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    border-radius: 6px;
+    padding: 22px 24px;
+    color: var(--ink);
+    transition: border-color 0.15s ease;
+  }
+  a.project-card:hover {
+    border-color: var(--amber-dim);
+  }
+  .project-card__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .project-card__name {
+    font-family: var(--display);
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  .project-card__tagline {
+    margin: 10px 0 14px;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .project-card__stack { margin: 0; }
+</style>

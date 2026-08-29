@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 720" font-family="'Segoe UI', system-ui, sans-serif">
+
+  <!-- Background -->
+  <rect width="900" height="720" fill="#0f1117" rx="12"/>
+
+  <!-- Title -->
+  <text x="450" y="44" text-anchor="middle" font-size="18" font-weight="700" fill="#e2e8f0">Notes on Farmer API — Architecture</text>
+
+  <!-- ─── LAYER LABELS (left side) ─── -->
+  <text x="22" y="138" font-size="11" fill="#64748b" font-weight="600" transform="rotate(-90,22,138)">CLIENT</text>
+  <text x="22" y="258" font-size="11" fill="#64748b" font-weight="600" transform="rotate(-90,22,258)">HTTP</text>
+  <text x="22" y="378" font-size="11" fill="#64748b" font-weight="600" transform="rotate(-90,22,378)">LOGIC</text>
+  <text x="22" y="498" font-size="11" fill="#64748b" font-weight="600" transform="rotate(-90,22,498)">DATA</text>
+  <text x="22" y="618" font-size="11" fill="#64748b" font-weight="600" transform="rotate(-90,22,618)">DB</text>
+
+  <!-- ─── ROW 1 : Client ─── -->
+  <!-- Shop Staff -->
+  <rect x="320" y="68" width="260" height="64" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="450" y="93" text-anchor="middle" font-size="13" font-weight="600" fill="#94a3b8">Shop Staff (Browser / API client)</text>
+  <text x="450" y="113" text-anchor="middle" font-size="11" fill="#64748b">Session cookie: JSESSIONID</text>
+
+  <!-- ─── Auth flow note ─── -->
+  <rect x="680" y="68" width="190" height="64" rx="8" fill="#1a2335" stroke="#1e3a5f" stroke-width="1.5"/>
+  <text x="775" y="88" text-anchor="middle" font-size="11" font-weight="600" fill="#60a5fa">Auth (Session-based)</text>
+  <text x="775" y="106" text-anchor="middle" font-size="10" fill="#64748b">POST /api/auth/login</text>
+  <text x="775" y="120" text-anchor="middle" font-size="10" fill="#64748b">→ sets JSESSIONID cookie</text>
+
+  <!-- arrow: staff → auth -->
+  <line x1="580" y1="100" x2="678" y2="100" stroke="#334155" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <polygon points="678,96 686,100 678,104" fill="#334155"/>
+
+  <!-- ─── Arrow: client → controller ─── -->
+  <line x1="450" y1="132" x2="450" y2="168" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="446,168 454,168 450,176" fill="#475569"/>
+  <text x="456" y="154" font-size="10" fill="#64748b">HTTP request</text>
+
+  <!-- ─── ROW 2 : Controller ─── -->
+  <rect x="220" y="176" width="460" height="80" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="450" y="202" text-anchor="middle" font-size="13" font-weight="600" fill="#a78bfa">NotesOnFarmerController</text>
+  <text x="350" y="222" text-anchor="middle" font-size="10" fill="#64748b">GET /api/notes-on-farmer?farmerId=</text>
+  <text x="570" y="222" text-anchor="middle" font-size="10" fill="#64748b">POST /api/notes-on-farmer</text>
+  <text x="350" y="240" text-anchor="middle" font-size="10" fill="#7c3aed">@RequestParam farmerId</text>
+  <text x="570" y="240" text-anchor="middle" font-size="10" fill="#7c3aed">@Valid @RequestBody DTO</text>
+
+  <!-- DTO box (right of controller row) -->
+  <rect x="700" y="176" width="170" height="80" rx="8" fill="#1a1f2e" stroke="#312e81" stroke-width="1.5"/>
+  <text x="785" y="202" text-anchor="middle" font-size="12" font-weight="600" fill="#818cf8">NotesOnFarmerRequest</text>
+  <text x="785" y="220" text-anchor="middle" font-size="10" fill="#64748b">(DTO — record)</text>
+  <text x="785" y="236" text-anchor="middle" font-size="10" fill="#64748b">farmerId: UUID @NotNull</text>
+  <text x="785" y="250" text-anchor="middle" font-size="10" fill="#64748b">content: String @NotBlank</text>
+
+  <!-- arrow controller → DTO -->
+  <line x1="680" y1="216" x2="700" y2="216" stroke="#312e81" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <polygon points="700,212 708,216 700,220" fill="#312e81"/>
+
+  <!-- ─── Arrow: controller → service ─── -->
+  <line x1="450" y1="256" x2="450" y2="292" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="446,292 454,292 450,300" fill="#475569"/>
+
+  <!-- ─── ROW 3 : Service ─── -->
+  <rect x="220" y="300" width="460" height="90" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="450" y="326" text-anchor="middle" font-size="13" font-weight="600" fill="#34d399">NotesOnFarmerService</text>
+  <text x="330" y="348" text-anchor="middle" font-size="10" fill="#64748b">create() @Transactional</text>
+  <text x="560" y="348" text-anchor="middle" font-size="10" fill="#64748b">listByFarmer() @Transactional(readOnly)</text>
+  <text x="330" y="366" text-anchor="middle" font-size="10" fill="#10b981">tenantId ← currentUserService</text>
+  <text x="560" y="366" text-anchor="middle" font-size="10" fill="#10b981">userId ← currentUserService</text>
+  <text x="450" y="382" text-anchor="middle" font-size="10" fill="#ef4444">requireFarmer() → throws if not found</text>
+
+  <!-- CurrentUserService box -->
+  <rect x="700" y="300" width="170" height="90" rx="8" fill="#1a1f2e" stroke="#065f46" stroke-width="1.5"/>
+  <text x="785" y="326" text-anchor="middle" font-size="12" font-weight="600" fill="#6ee7b7">CurrentUserService</text>
+  <text x="785" y="346" text-anchor="middle" font-size="10" fill="#64748b">getTenantId()</text>
+  <text x="785" y="362" text-anchor="middle" font-size="10" fill="#64748b">getCurrentUserId()</text>
+  <text x="785" y="378" text-anchor="middle" font-size="10" fill="#64748b">reads JSESSIONID session</text>
+
+  <!-- arrow service → currentUserService -->
+  <line x1="680" y1="345" x2="700" y2="345" stroke="#065f46" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <polygon points="700,341 708,345 700,349" fill="#065f46"/>
+
+  <!-- GlobalExceptionHandler box -->
+  <rect x="30" y="300" width="170" height="90" rx="8" fill="#1a1a1f" stroke="#7f1d1d" stroke-width="1.5"/>
+  <text x="115" y="326" text-anchor="middle" font-size="12" font-weight="600" fill="#fca5a5">GlobalException</text>
+  <text x="115" y="342" text-anchor="middle" font-size="12" font-weight="600" fill="#fca5a5">Handler</text>
+  <text x="115" y="362" text-anchor="middle" font-size="10" fill="#64748b">IllegalArgumentException</text>
+  <text x="115" y="378" text-anchor="middle" font-size="10" fill="#64748b">→ 400 / 404 response</text>
+
+  <!-- arrow service → exception handler -->
+  <line x1="220" y1="345" x2="200" y2="345" stroke="#7f1d1d" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <polygon points="200,341 192,345 200,349" fill="#7f1d1d"/>
+
+  <!-- ─── Arrow: service → repository ─── -->
+  <line x1="450" y1="390" x2="450" y2="426" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="446,426 454,426 450,434" fill="#475569"/>
+
+  <!-- ─── ROW 4 : Repository + Entity ─── -->
+  <rect x="220" y="434" width="460" height="80" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="450" y="460" text-anchor="middle" font-size="13" font-weight="600" fill="#fb923c">NotesOnFarmerRepository</text>
+  <text x="450" y="478" text-anchor="middle" font-size="10" fill="#64748b">extends JpaRepository&lt;NoteOnFarmer, UUID&gt;</text>
+  <text x="330" y="498" text-anchor="middle" font-size="10" fill="#64748b">save()</text>
+  <text x="450" y="498" text-anchor="middle" font-size="10" fill="#64748b">findById()</text>
+  <text x="590" y="498" text-anchor="middle" font-size="10" fill="#64748b">findByFarmerIdOrderByCreatedAtDesc()</text>
+
+  <!-- Entity box -->
+  <rect x="700" y="434" width="170" height="80" rx="8" fill="#1a1f2e" stroke="#7c2d12" stroke-width="1.5"/>
+  <text x="785" y="460" text-anchor="middle" font-size="12" font-weight="600" fill="#fdba74">NoteOnFarmer</text>
+  <text x="785" y="478" text-anchor="middle" font-size="10" fill="#64748b">extends TenantScopedEntity</text>
+  <text x="785" y="494" text-anchor="middle" font-size="10" fill="#64748b">@Filter tenant isolation</text>
+  <text x="785" y="510" text-anchor="middle" font-size="10" fill="#64748b">farmerId, userId, content</text>
+
+  <!-- arrow repo → entity -->
+  <line x1="680" y1="474" x2="700" y2="474" stroke="#7c2d12" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <polygon points="700,470 708,474 700,478" fill="#7c2d12"/>
+
+  <!-- ─── Arrow: repository → DB ─── -->
+  <line x1="450" y1="514" x2="450" y2="550" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="446,550 454,550 450,558" fill="#475569"/>
+
+  <!-- ─── ROW 5 : Database ─── -->
+  <rect x="100" y="558" width="700" height="110" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="450" y="582" text-anchor="middle" font-size="13" font-weight="600" fill="#38bdf8">PostgreSQL — notes_on_farmer</text>
+
+  <!-- table columns -->
+  <text x="180" y="606" text-anchor="middle" font-size="10" fill="#64748b">id UUID (PK)</text>
+  <text x="295" y="606" text-anchor="middle" font-size="10" fill="#64748b">tenant_id UUID (FK)</text>
+  <text x="415" y="606" text-anchor="middle" font-size="10" fill="#64748b">farmer_id UUID (FK)</text>
+  <text x="535" y="606" text-anchor="middle" font-size="10" fill="#64748b">user_id UUID (FK)</text>
+  <text x="680" y="606" text-anchor="middle" font-size="10" fill="#64748b">content TEXT</text>
+
+  <text x="240" y="628" text-anchor="middle" font-size="10" fill="#64748b">created_at TIMESTAMPTZ</text>
+  <text x="450" y="628" text-anchor="middle" font-size="10" fill="#64748b">updated_at TIMESTAMPTZ</text>
+  <text x="660" y="628" text-anchor="middle" font-size="10" fill="#0ea5e9">INDEX on farmer_id</text>
+
+  <!-- FK reference lines -->
+  <text x="450" y="652" text-anchor="middle" font-size="10" fill="#475569">FK refs → tenants(id)  ·  farmers(id)  ·  staff_users(id)</text>
+
+  <!-- Migration label -->
+  <text x="450" y="672" text-anchor="middle" font-size="10" fill="#64748b" font-style="italic">V13__add_notes_on_farmer.sql  (Flyway migration)</text>
+
+  <!-- ─── Legend ─── -->
+  <rect x="30" y="558" width="50" height="14" rx="3" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="55" y="569" text-anchor="middle" font-size="9" fill="#94a3b8">Layer box</text>
+  <line x1="30" y1="590" x2="60" y2="590" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="60,587 66,590 60,593" fill="#475569"/>
+  <text x="48" y="603" text-anchor="middle" font-size="9" fill="#64748b">call flow</text>
+  <line x1="30" y1="618" x2="60" y2="618" stroke="#334155" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <polygon points="60,615 66,618 60,621" fill="#334155"/>
+  <text x="48" y="631" text-anchor="middle" font-size="9" fill="#64748b">dependency</text>
+
+</svg>

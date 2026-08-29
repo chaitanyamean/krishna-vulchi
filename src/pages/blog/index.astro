@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Layout title="Blog — Krishna Chaitanya Vulchi" description="Notes on frontend, backend, and AI infrastructure.">
+  <section class="wrap wrap--wide">
+    <p class="eyebrow">blog</p>
+    <h1>Everything I've written</h1>
+    <p class="page-intro">
+      No fixed beat — frontend performance one week, agentic AI reliability
+      the next, whatever I was deep enough in to have an opinion about.
+    </p>
+    {posts.length > 0 ? (
+      <div>
+        {posts.map((post) => (
+          <PostCard
+            href={`/blog/${post.slug}`}
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.date}
+            tags={post.data.tags}
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="meta">Nothing published yet — first post is coming.</p>
+    )}
+  </section>
+</Layout>
+
+<style>
+  h1 { margin: 10px 0 12px; font-size: 2rem; }
+  .page-intro {
+    color: var(--ink-dim);
+    max-width: 60ch;
+    margin-bottom: 32px;
+  }
+</style>

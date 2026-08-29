@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base target="_top">
+<title>Arrays, Two Pointers, Sliding Window, Prefix Sum &amp; Kadane's — Complete Mock Interview Prep</title>
+<style>
+  :root{
+    --bg:#0d0f14;
+    --surface:#151822;
+    --surface2:#1b1f2a;
+    --text:#e5e7ee;
+    --muted:#949cad;
+    --border:#2a2f3b;
+    --accent:#818cf8;
+    --accent-soft:#1e1b4b;
+    --accent2:#2dd4bf;
+    --accent2-soft:#0a2f2c;
+    --warn:#f87171;
+    --warn-soft:#450a0a;
+    --code-bg:#161a24;
+    --code-text:#e6e9ef;
+    --code-key:#7dd3fc;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  html{color-scheme:dark;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55;
+  }
+  a{color:var(--accent);}
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px 80px;}
+
+  /* Header */
+  header{
+    background:linear-gradient(135deg,#1e1b4b,#4338ca 55%,#0f766e);
+    color:#fff;
+    padding:36px 20px 28px;
+  }
+  header .inner{max-width:900px;margin:0 auto;}
+  header h1{margin:0 0 6px;font-size:1.6rem;}
+  header p.sub{margin:0 0 18px;color:#dbe0ff;font-size:.98rem;}
+  .countdown{
+    display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:var(--radius);
+    padding:12px 16px;
+    font-size:.95rem;
+  }
+  .countdown b{font-size:1.15rem;}
+  .countdown span.label{color:#dbe0ff;}
+
+  /* Sticky nav */
+  nav.toc{
+    position:sticky;top:0;z-index:10;
+    background:rgba(13,15,20,.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);
+    overflow-x:auto;
+    white-space:nowrap;
+    padding:10px 20px;
+  }
+  nav.toc .inner{max-width:900px;margin:0 auto;display:flex;gap:8px;}
+  nav.toc a{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:999px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--text);
+    text-decoration:none;
+    font-size:.85rem;
+    font-weight:600;
+  }
+  nav.toc a:hover{border-color:var(--accent);color:var(--accent);}
+
+  section{padding-top:44px;scroll-margin-top:56px;}
+  h2{font-size:1.35rem;margin:0 0 6px;}
+  h2 .tag{
+    display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
+    padding:2px 8px;border-radius:6px;vertical-align:middle;margin-right:8px;
+  }
+  h3{font-size:1.05rem;margin:26px 0 8px;}
+  h3 .tag{
+    display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
+    padding:2px 7px;border-radius:6px;vertical-align:middle;margin-right:6px;
+  }
+  p{margin:8px 0;}
+  .lede{color:var(--muted);font-size:.98rem;}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    margin:14px 0;
+  }
+  .card ul{margin:8px 0 0;padding-left:20px;}
+  .card li{margin:4px 0;}
+  .callout{
+    border-left:4px solid var(--accent);
+    background:var(--accent-soft);
+    border-radius:8px;
+    padding:12px 16px;
+    margin:14px 0;
+    font-size:.93rem;
+  }
+  .callout.drill{border-left-color:var(--accent2);background:var(--accent2-soft);}
+  .callout b{display:block;margin-bottom:2px;}
+
+  /* code */
+  pre{
+    background:var(--code-bg);
+    color:var(--code-text);
+    padding:14px 16px;
+    border-radius:10px;
+    overflow-x:auto;
+    font-size:.83rem;
+    line-height:1.5;
+    margin:10px 0;
+  }
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  p code, li code, td code{
+    background:var(--surface2);color:var(--text);padding:1px 6px;border-radius:5px;font-size:.85em;
+  }
+  details{margin:10px 0;}
+  details summary{
+    cursor:pointer;font-weight:600;color:var(--accent);
+    padding:8px 0;list-style:none;
+  }
+  details summary::-webkit-details-marker{display:none;}
+  details summary::before{content:"▸ ";}
+  details[open] summary::before{content:"▾ ";}
+  details p{margin:4px 0 0;font-size:.85rem;color:var(--muted);}
+
+  /* problem card */
+  .problem{border:1px solid var(--border);border-radius:var(--radius);margin:14px 0;overflow:hidden;}
+  .problem .phead{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border);
+    flex-wrap:wrap;
+  }
+  .problem .phead h4{margin:0;font-size:.98rem;}
+  .pbadges{display:flex;gap:6px;flex-wrap:wrap;}
+  .badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;display:inline-block;}
+  .badge.easy{background:#14532d;color:#86efac;}
+  .badge.medium{background:#78350f;color:#fcd34d;}
+  .badge.hard{background:#7f1d1d;color:#fca5a5;}
+  .badge.freq{background:#312e81;color:#c7d2fe;}
+  .badge.bonus{background:#4c1d95;color:#e9d5ff;}
+  .pbody{padding:14px 16px;}
+  .clue{font-size:.85rem;color:var(--muted);margin:6px 0;}
+  .clue b{color:var(--text);}
+  .why{font-size:.8rem;color:var(--muted);margin-top:3px;}
+  .lc-link{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:6px;
+    color:var(--accent);border:1px solid var(--border);
+    background:var(--surface);text-decoration:none;flex-shrink:0;
+  }
+  .lc-link:hover{border-color:var(--accent);background:var(--accent-soft);}
+  .lc-link svg{width:14px;height:14px;}
+  .badge.na{background:var(--surface2);color:var(--muted);}
+
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:.85rem;}
+  th,td{border:1px solid var(--border);padding:6px 8px;text-align:center;vertical-align:top;}
+  th{background:var(--surface2);}
+  td.left-align, th.left-align{text-align:left;}
+  table.practice th, table.practice td{text-align:left;padding:9px 10px;}
+  td.chk{text-align:center !important;width:34px;}
+  input[type=checkbox]{width:17px;height:17px;}
+
+  /* array visualizer */
+  .arr-row{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 6px;justify-content:center;}
+  .cell{
+    width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+    border:2px solid var(--border);border-radius:8px;font-weight:700;font-size:.95rem;
+    background:var(--surface);position:relative;transition:all .25s ease;
+  }
+  .cell.idx{border:none;height:20px;color:var(--muted);font-weight:600;font-size:.72rem;}
+  .cell.L{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);}
+  .cell.R{border-color:var(--accent2);background:var(--accent2-soft);color:var(--accent2);}
+  .cell.window{border-color:var(--accent2);background:var(--accent2-soft);}
+  .cell.out{opacity:.35;}
+  .ptr-row{display:flex;gap:6px;justify-content:center;margin-bottom:4px;height:20px;}
+  .ptr{width:44px;text-align:center;font-size:.72rem;font-weight:700;}
+  .ptr.L{color:var(--accent);}
+  .ptr.R{color:var(--accent2);}
+  .demo-status{
+    text-align:center;margin:12px 0;font-size:.92rem;background:var(--surface2);
+    border:1px dashed var(--border);border-radius:8px;padding:10px;
+  }
+  .demo-controls{display:flex;gap:10px;justify-content:center;margin:14px 0;flex-wrap:wrap;}
+  button.step-btn{
+    background:var(--accent);color:#111324;border:none;padding:9px 16px;border-radius:8px;
+    font-weight:700;font-size:.85rem;cursor:pointer;
+  }
+  button.step-btn.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+  button.step-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .step-log{font-size:.8rem;color:var(--muted);text-align:center;min-height:18px;}
+
+  /* schedule table */
+  .sched td.day{font-weight:700;background:var(--surface2);}
+  .sched td.left-align{text-align:left;}
+
+  /* cheat sheet */
+  .cheat td.left-align{text-align:left;}
+  .cheat tr:hover{background:var(--surface2);}
+  table.practice tr:hover{background:var(--surface2);}
+
+  footer{color:var(--muted);font-size:.8rem;text-align:center;padding:30px 20px;}
+  hr.sep{border:none;border-top:1px solid var(--border);margin:40px 0;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <h1>Arrays, Two Pointers, Sliding Window, Prefix Sum &amp; Kadane's</h1>
+    <p class="sub">Muscle-memory drill guide + unseen practice set, built for your mock interview.</p>
+    <div class="countdown" id="countdown">
+      <span class="label">Mock interview:</span> <b>Sat, 29 Aug · 9:00 PM IST</b>
+      <span class="label">&nbsp;·&nbsp;</span>
+      <span id="countdown-text"><b>—</b> days to go</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="inner">
+    <a href="#how-to-use">How to use this</a>
+    <a href="#cheatsheet">Pattern cheat sheet</a>
+    <a href="#arrays">Arrays</a>
+    <a href="#two-pointers">Two Pointers</a>
+    <a href="#sliding-window">Sliding Window</a>
+    <a href="#prefix-sum">Prefix Sum</a>
+    <a href="#kadane">Kadane's</a>
+    <a href="#schedule">14-day plan</a>
+    <a href="#selftest">Self-test</a>
+    <a href="#practice">Practice set</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<section id="how-to-use">
+  <h2>How to use this guide</h2>
+  <p class="lede">You don't need to memorize solutions — you need to recognize <b>which pattern a problem is asking for</b> and be able to write the boilerplate without thinking. That's what "muscle memory" means here.</p>
+  <div class="callout">
+    <b>For each pattern below:</b>
+    Read the plain-English idea → step through the interactive/visual example → look away and write the template from memory → then open the code to check yourself → then do the practice questions. Once you've done that for all five patterns, jump to the <a href="#practice">Practice Set</a> at the bottom for problems you haven't seen before — that's the part that actually tests whether the pattern stuck.
+  </div>
+</section>
+
+<section id="cheatsheet">
+  <h2><span class="tag">Reference</span>Pattern-recognition cheat sheet</h2>
+  <p class="lede">In an interview, the problem statement usually drops a clue. Match the clue to the pattern before you start coding.</p>
+  <table class="cheat">
+    <tr><th class="left-align">If the problem says…</th><th class="left-align">Think</th></tr>
+    <tr><td class="left-align">"sorted array", find a pair / triplet with a target sum</td><td class="left-align">Two Pointers (opposite ends)</td></tr>
+    <tr><td class="left-align">remove/compact elements in-place, dedupe a sorted array</td><td class="left-align">Two Pointers (same direction / fast-slow)</td></tr>
+    <tr><td class="left-align">"subarray of size k", fixed-length window</td><td class="left-align">Sliding Window (fixed size)</td></tr>
+    <tr><td class="left-align">"longest / shortest substring or subarray that satisfies …"</td><td class="left-align">Sliding Window (variable size)</td></tr>
+    <tr><td class="left-align">many repeated range-sum queries on an unchanging array</td><td class="left-align">Prefix Sum</td></tr>
+    <tr><td class="left-align">"number of subarrays with sum = k" (values can be negative)</td><td class="left-align">Prefix Sum + HashMap</td></tr>
+    <tr><td class="left-align">"maximum sum subarray" (contiguous, values can be negative)</td><td class="left-align">Kadane's Algorithm</td></tr>
+    <tr><td class="left-align">max sum but array wraps around (circular)</td><td class="left-align">Kadane's (circular variant)</td></tr>
+    <tr><td class="left-align">max <i>product</i> subarray</td><td class="left-align">Kadane's (track running min too)</td></tr>
+  </table>
+</section>
+
+<hr class="sep">
+
+<section id="arrays">
+  <h2><span class="tag">Foundation</span>Arrays</h2>
+  <p class="lede">Everything else in this guide is built on top of arrays, so get comfortable with in-place manipulation first — it's the skill examiners quietly check before anything fancier.</p>
+
+  <div class="callout drill">
+    <b>Muscle-memory template — in-place overwrite (fast/slow pointer)</b>
+    Used whenever you must shrink or rearrange an array without extra space.
+  </div>
+  <pre><code>int slow = 0;
+for (int fast = 0; fast &lt; arr.length; fast++) {
+    if (/* arr[fast] should be kept */ true) {
+        arr[slow] = arr[fast];
+        slow++;
+    }
+}
+// slow is now the new logical length</code></pre>
+
+  <h3>Must-know questions</h3>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>1. Move Zeroes</h4>
+      <div class="pbadges"><span class="badge easy">Easy</span><span class="badge freq">Very common</span><a class="lc-link" href="https://leetcode.com/problems/move-zeroes/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Given an array, move all <code>0</code>s to the end while keeping the relative order of the non-zero elements, in-place.</p>
+      <p class="clue"><b>Clue:</b> "in-place", "maintain relative order" → same-direction two pointers.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public void moveZeroes(int[] nums) {
+    int slow = 0;
+    for (int fast = 0; fast &lt; nums.length; fast++) {
+        if (nums[fast] != 0) {
+            int temp = nums[slow];
+            nums[slow] = nums[fast];
+            nums[fast] = temp;
+            slow++;
+        }
+    }
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>2. Rotate Array (by k steps, right rotation)</h4>
+      <div class="pbadges"><span class="badge medium">Medium</span><span class="badge freq">Very common</span><a class="lc-link" href="https://leetcode.com/problems/rotate-array/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Rotate <code>nums</code> to the right by <code>k</code> steps, in-place, O(1) extra space.</p>
+      <p class="clue"><b>Clue:</b> "rotate in-place" → the reversal trick: reverse the whole array, then reverse each half.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public void rotate(int[] nums, int k) {
+    int n = nums.length;
+    k %= n;
+    reverse(nums, 0, n - 1);
+    reverse(nums, 0, k - 1);
+    reverse(nums, k, n - 1);
+}
+
+private void reverse(int[] nums, int i, int j) {
+    while (i &lt; j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+        i++; j--;
+    }
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+      <p class="clue">Example: <code>[1,2,3,4,5,6,7]</code>, k=3 → reverse all → <code>[7,6,5,4,3,2,1]</code> → reverse first 3 → <code>[5,6,7,4,3,2,1]</code> → reverse last 4 → <code>[5,6,7,1,2,3,4]</code>.</p>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>3. Best Time to Buy and Sell Stock</h4>
+      <div class="pbadges"><span class="badge easy">Easy</span><span class="badge freq">Very common</span><a class="lc-link" href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>One pass, one buy + one sell, maximize profit.</p>
+      <p class="clue"><b>Clue:</b> "one transaction, maximize profit" → track the minimum price seen so far as you scan once.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public int maxProfit(int[] prices) {
+    int minPrice = Integer.MAX_VALUE;
+    int maxProfit = 0;
+    for (int price : prices) {
+        minPrice = Math.min(minPrice, price);
+        maxProfit = Math.max(maxProfit, price - minPrice);
+    }
+    return maxProfit;
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>4. Majority Element</h4>
+      <div class="pbadges"><span class="badge easy">Easy</span><span class="badge freq">Common</span><a class="lc-link" href="https://leetcode.com/problems/majority-element/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Find the element that appears more than <code>n/2</code> times. (Boyer–Moore voting algorithm.)</p>
+      <p class="clue"><b>Clue:</b> "more than n/2 times", O(1) space required → pair up a candidate against every other element; it can't lose.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public int majorityElement(int[] nums) {
+    int count = 0, candidate = 0;
+    for (int num : nums) {
+        if (count == 0) candidate = num;
+        count += (num == candidate) ? 1 : -1;
+    }
+    return candidate;
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<section id="two-pointers">
+  <h2><span class="tag">Pattern</span>Two Pointers</h2>
+  <p class="lede">Two indices move through the array (or string) instead of nested loops. It replaces an O(n²) brute force with O(n). There are two flavors:</p>
+  <ul>
+    <li><b>Opposite ends</b> — one pointer starts at index 0, the other at the end, and they move toward each other. Needs a <b>sorted</b> array (or a symmetric structure like a string for palindromes).</li>
+    <li><b>Same direction (fast/slow)</b> — both start at 0; the fast pointer scouts ahead, the slow pointer marks where to write next. Used for in-place compaction (see Arrays above).</li>
+  </ul>
+
+  <h3>Interactive: opposite-ends walkthrough</h3>
+  <p class="lede">Two Sum II — array is sorted, find two numbers that add up to a target. Click "Next step" and watch how the pointers close in.</p>
+
+  <div class="card">
+    <div class="ptr-row" id="tp-ptr-row"></div>
+    <div class="arr-row" id="tp-arr-row"></div>
+    <div class="arr-row" id="tp-idx-row"></div>
+    <div class="demo-status" id="tp-status">Array = [2, 7, 11, 15], target = 9. Click "Next step" to begin.</div>
+    <div class="demo-controls">
+      <button class="step-btn secondary" id="tp-reset">Reset</button>
+      <button class="step-btn" id="tp-next">Next step →</button>
+    </div>
+  </div>
+
+  <div class="callout drill">
+    <b>Muscle-memory template — opposite ends</b>
+  </div>
+  <pre><code>int left = 0, right = arr.length - 1;
+while (left &lt; right) {
+    int sum = arr[left] + arr[right];
+    if (sum == target) {
+        // found it
+        break;
+    } else if (sum &lt; target) {
+        left++;   // need a bigger sum
+    } else {
+        right--;  // need a smaller sum
+    }
+}</code></pre>
+
+  <h3>Must-know questions</h3>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>1. Two Sum II — Input Array Is Sorted</h4>
+      <div class="pbadges"><span class="badge easy">Easy</span><span class="badge freq">Very common</span><a class="lc-link" href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Return 1-indexed positions of the two numbers that add up to <code>target</code> (array is sorted ascending).</p>
+      <details><summary>Java solution</summary>
+<pre><code>public int[] twoSum(int[] numbers, int target) {
+    int left = 0, right = numbers.length - 1;
+    while (left &lt; right) {
+        int sum = numbers[left] + numbers[right];
+        if (sum == target) return new int[]{left + 1, right + 1};
+        else if (sum &lt; target) left++;
+        else right--;
+    }
+    return new int[]{-1, -1};
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>2. Container With Most Water</h4>
+      <div class="pbadges"><span class="badge medium">Medium</span><span class="badge freq">Very common</span><a class="lc-link" href="https://leetcode.com/problems/container-with-most-water/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Given heights of vertical lines, find two lines that together with the x-axis form the container holding the most water.</p>
+      <p class="clue"><b>Clue:</b> width shrinks as pointers move inward, so always move the pointer at the <b>shorter</b> line — keeping the shorter one can never help.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public int maxArea(int[] height) {
+    int left = 0, right = height.length - 1, max = 0;
+    while (left &lt; right) {
+        int width = right - left;
+        int h = Math.min(height[left], height[right]);
+        max = Math.max(max, width * h);
+        if (height[left] &lt; height[right]) left++;
+        else right--;
+    }
+    return max;
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>3. 3Sum</h4>
+      <div class="pbadges"><span class="badge medium">Medium</span><span class="badge freq">Very common</span><a class="lc-link" href="https://leetcode.com/problems/3sum/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Find all unique triplets that sum to zero.</p>
+      <p class="clue"><b>Clue:</b> sort first, then fix one number and run the opposite-ends two-pointer on the rest. Skip duplicates carefully.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; threeSum(int[] nums) {
+    Arrays.sort(nums);
+    List&lt;List&lt;Integer&gt;&gt; result = new ArrayList&lt;&gt;();
+    for (int i = 0; i &lt; nums.length - 2; i++) {
+        if (i &gt; 0 && nums[i] == nums[i - 1]) continue; // skip dup anchors
+        int left = i + 1, right = nums.length - 1;
+        while (left &lt; right) {
+            int sum = nums[i] + nums[left] + nums[right];
+            if (sum == 0) {
+                result.add(Arrays.asList(nums[i], nums[left], nums[right]));
+                while (left &lt; right && nums[left] == nums[left + 1]) left++;
+                while (left &lt; right && nums[right] == nums[right - 1]) right--;
+                left++; right--;
+            } else if (sum &lt; 0) left++;
+            else right--;
+        }
+    }
+    return result;
+}
+// Time: O(n^2)  Space: O(1) extra (excluding output)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>4. Remove Duplicates from Sorted Array</h4>
+      <div class="pbadges"><span class="badge easy">Easy</span><span class="badge freq">Common</span><a class="lc-link" href="https://leetcode.com/problems/remove-duplicates-from-sorted-array/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Remove duplicates in-place from a sorted array so each element appears once; return the new length.</p>
+      <p class="clue"><b>Clue:</b> in-place + sorted → same-direction fast/slow pointers.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public int removeDuplicates(int[] nums) {
+    int slow = 1;
+    for (int fast = 1; fast &lt; nums.length; fast++) {
+        if (nums[fast] != nums[fast - 1]) {
+            nums[slow] = nums[fast];
+            slow++;
+        }
+    }
+    return slow;
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<section id="sliding-window">
+  <h2><span class="tag">Pattern</span>Sliding Window</h2>
+  <p class="lede">A specialization of two pointers for <b>contiguous</b> ranges. Instead of recomputing a sum/count for every subarray (O(n·k) or O(n²)), you slide a window and update the running result incrementally — O(n).</p>
+  <ul>
+    <li><b>Fixed size</b> — the window width <code>k</code> never changes; you add one element on the right and drop one on the left every step.</li>
+    <li><b>Variable size</b> — the window grows by moving <code>right</code>, and shrinks from <code>left</code> only when it breaks some condition.</li>
+  </ul>
+
+  <h3>Interactive: fixed-size window walkthrough</h3>
+  <p class="lede">Maximum sum of any subarray of size k = 3, on <code>[2, 1, 5, 1, 3, 2]</code>.</p>
+
+  <div class="card">
+    <div class="arr-row" id="sw-arr-row"></div>
+    <div class="arr-row" id="sw-idx-row"></div>
+    <div class="demo-status" id="sw-status">Click "Next step" to slide the window.</div>
+    <div class="demo-controls">
+      <button class="step-btn secondary" id="sw-reset">Reset</button>
+      <button class="step-btn" id="sw-next">Next step →</button>
+    </div>
+  </div>
+
+  <div class="callout drill">
+    <b>Muscle-memory template — fixed window</b>
+  </div>
+  <pre><code>int windowSum = 0;
+for (int i = 0; i &lt; k; i++) windowSum += arr[i];   // build first window
+int maxSum = windowSum;
+for (int i = k; i &lt; arr.length; i++) {
+    windowSum += arr[i] - arr[i - k];   // add new right, drop old left
+    maxSum = Math.max(maxSum, windowSum);
+}</code></pre>
+
+  <div class="callout drill">
+    <b>Muscle-memory template — variable window</b>
+  </div>
+  <pre><code>int left = 0;
+for (int right = 0; right &lt; arr.length; right++) {
+    // 1. expand: fold arr[right] into your running state
+
+    while (/* window is currently invalid */ false) {
+        // 2. shrink: remove arr[left] from state, then left++
+        left++;
+    }
+
+    // 3. window [left, right] is valid here — update the answer
+}</code></pre>
+
+  <h3>Must-know questions</h3>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>1. Maximum Sum Subarray of Size K</h4>
+      <div class="pbadges"><span class="badge easy">Easy</span><span class="badge freq">Foundational</span><a class="lc-link" href="https://leetcode.com/problems/maximum-average-subarray-i/" target="_blank" rel="noopener" title="Closest LeetCode equivalent: Maximum Average Subarray I (same fixed-window mechanic, divides by k)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>The template above, verbatim. Get this one automatic before moving to variable-size problems.</p>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>2. Longest Substring Without Repeating Characters</h4>
+      <div class="pbadges"><span class="badge medium">Medium</span><span class="badge freq">Very common</span><a class="lc-link" href="https://leetcode.com/problems/longest-substring-without-repeating-characters/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Find the length of the longest substring with no repeated characters.</p>
+      <p class="clue"><b>Clue:</b> "longest substring that satisfies X" → variable window; shrink whenever a repeat shows up.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public int lengthOfLongestSubstring(String s) {
+    Map&lt;Character, Integer&gt; lastSeen = new HashMap&lt;&gt;();
+    int left = 0, maxLen = 0;
+    for (int right = 0; right &lt; s.length(); right++) {
+        char c = s.charAt(right);
+        if (lastSeen.containsKey(c) && lastSeen.get(c) &gt;= left) {
+            left = lastSeen.get(c) + 1;   // jump left past the repeat
+        }
+        lastSeen.put(c, right);
+        maxLen = Math.max(maxLen, right - left + 1);
+    }
+    return maxLen;
+}
+// Time: O(n)  Space: O(min(n, charset))</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>3. Minimum Window Substring</h4>
+      <div class="pbadges"><span class="badge hard">Hard</span><span class="badge freq">Very common</span><a class="lc-link" href="https://leetcode.com/problems/minimum-window-substring/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Find the smallest substring of <code>s</code> that contains every character of <code>t</code> (with multiplicity).</p>
+      <p class="clue"><b>Clue:</b> "smallest window that satisfies X" → expand until valid, then shrink as far as possible while it stays valid — the classic dual-loop variable window.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public String minWindow(String s, String t) {
+    if (s.isEmpty() || t.isEmpty()) return "";
+    Map&lt;Character, Integer&gt; need = new HashMap&lt;&gt;();
+    for (char c : t.toCharArray()) need.merge(c, 1, Integer::sum);
+
+    Map&lt;Character, Integer&gt; window = new HashMap&lt;&gt;();
+    int left = 0, required = need.size(), formed = 0;
+    int bestLen = Integer.MAX_VALUE, bestLeft = 0;
+
+    for (int right = 0; right &lt; s.length(); right++) {
+        char c = s.charAt(right);
+        window.merge(c, 1, Integer::sum);
+        if (need.containsKey(c) && window.get(c).intValue() == need.get(c).intValue()) {
+            formed++;
+        }
+        while (formed == required) {
+            if (right - left + 1 &lt; bestLen) {
+                bestLen = right - left + 1;
+                bestLeft = left;
+            }
+            char lc = s.charAt(left);
+            window.put(lc, window.get(lc) - 1);
+            if (need.containsKey(lc) && window.get(lc) &lt; need.get(lc)) {
+                formed--;
+            }
+            left++;
+        }
+    }
+    return bestLen == Integer.MAX_VALUE ? "" : s.substring(bestLeft, bestLeft + bestLen);
+}
+// Time: O(n)  Space: O(charset)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>4. Longest Subarray with Sum ≤ K</h4>
+      <div class="pbadges"><span class="badge medium">Medium</span><span class="badge freq">Common</span><span class="badge na" title="No official LeetCode page for this exact problem — it's a teaching variant">Not on LeetCode</span></div>
+    </div>
+    <div class="pbody">
+      <p>Non-negative integers only. Find the length of the longest contiguous subarray whose sum is at most <code>k</code>.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public int longestSubarraySumAtMostK(int[] arr, int k) {
+    int left = 0, sum = 0, maxLen = 0;
+    for (int right = 0; right &lt; arr.length; right++) {
+        sum += arr[right];
+        while (sum &gt; k) {
+            sum -= arr[left];
+            left++;
+        }
+        maxLen = Math.max(maxLen, right - left + 1);
+    }
+    return maxLen;
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+      <p class="clue">Note: this "shrink while invalid" shape only works cleanly when all values are non-negative — that's why it doesn't apply directly once negatives are allowed (that's Prefix Sum + HashMap territory instead).</p>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<section id="prefix-sum">
+  <h2><span class="tag">Pattern</span>Prefix Sum</h2>
+  <p class="lede">Precompute a running total so any range sum becomes a single subtraction instead of a re-scan. Turns O(n) per query into O(1) per query, after an O(n) one-time build.</p>
+
+  <div class="card">
+    <p style="margin:0 0 10px;font-weight:600;">arr = [3, 1, 4, 1, 5, 9, 2, 6]</p>
+    <div class="arr-row">
+      <div class="cell">3</div><div class="cell">1</div><div class="cell">4</div><div class="cell">1</div>
+      <div class="cell">5</div><div class="cell">9</div><div class="cell">2</div><div class="cell">6</div>
+    </div>
+    <p style="margin:14px 0 10px;font-weight:600;">prefix[i] = sum of the first i elements (prefix[0] = 0)</p>
+    <div class="arr-row">
+      <div class="cell" style="background:var(--accent-soft);border-color:var(--accent);color:var(--accent);">0</div>
+      <div class="cell" style="background:var(--accent-soft);border-color:var(--accent);color:var(--accent);">3</div>
+      <div class="cell" style="background:var(--accent-soft);border-color:var(--accent);color:var(--accent);">4</div>
+      <div class="cell" style="background:var(--accent-soft);border-color:var(--accent);color:var(--accent);">8</div>
+      <div class="cell" style="background:var(--accent-soft);border-color:var(--accent);color:var(--accent);">9</div>
+      <div class="cell" style="background:var(--accent-soft);border-color:var(--accent);color:var(--accent);">14</div>
+      <div class="cell" style="background:var(--accent-soft);border-color:var(--accent);color:var(--accent);">23</div>
+      <div class="cell" style="background:var(--accent-soft);border-color:var(--accent);color:var(--accent);">25</div>
+      <div class="cell" style="background:var(--accent-soft);border-color:var(--accent);color:var(--accent);">31</div>
+    </div>
+    <p style="margin-top:12px;">Sum of <code>arr[2..5]</code> (i.e. 4+1+5+9=19) = <code>prefix[6] − prefix[2]</code> = 23 − 4 = <b>19</b>. No re-scanning needed, however many queries you get.</p>
+  </div>
+
+  <div class="callout drill">
+    <b>Muscle-memory template — build + range query</b>
+  </div>
+  <pre><code>int[] prefix = new int[n + 1];
+for (int i = 0; i &lt; n; i++) {
+    prefix[i + 1] = prefix[i] + arr[i];
+}
+// sum of arr[l..r] inclusive:
+int rangeSum = prefix[r + 1] - prefix[l];</code></pre>
+
+  <div class="callout drill">
+    <b>Muscle-memory template — prefix sum + hashmap (count subarrays with sum = k)</b>
+    Works even with negative numbers, where sliding window breaks down.
+  </div>
+  <pre><code>Map&lt;Integer, Integer&gt; prefixCount = new HashMap&lt;&gt;();
+prefixCount.put(0, 1);   // empty prefix
+int sum = 0, count = 0;
+for (int num : arr) {
+    sum += num;
+    count += prefixCount.getOrDefault(sum - k, 0);
+    prefixCount.merge(sum, 1, Integer::sum);
+}</code></pre>
+
+  <h3>Must-know questions</h3>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>1. Range Sum Query — Immutable</h4>
+      <div class="pbadges"><span class="badge easy">Easy</span><span class="badge freq">Foundational</span><a class="lc-link" href="https://leetcode.com/problems/range-sum-query-immutable/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Design a class that answers many <code>sumRange(left, right)</code> queries efficiently.</p>
+      <details><summary>Java solution</summary>
+<pre><code>class NumArray {
+    private int[] prefix;
+    public NumArray(int[] nums) {
+        prefix = new int[nums.length + 1];
+        for (int i = 0; i &lt; nums.length; i++) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+    }
+    public int sumRange(int left, int right) {
+        return prefix[right + 1] - prefix[left];
+    }
+}
+// Build: O(n)   Query: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>2. Subarray Sum Equals K</h4>
+      <div class="pbadges"><span class="badge medium">Medium</span><span class="badge freq">Very common</span><a class="lc-link" href="https://leetcode.com/problems/subarray-sum-equals-k/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Count how many contiguous subarrays sum to exactly <code>k</code>. Array can contain negatives.</p>
+      <p class="clue"><b>Clue:</b> "count subarrays with sum = k" + negatives allowed → prefix sum + hashmap, not sliding window.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public int subarraySum(int[] nums, int k) {
+    Map&lt;Integer, Integer&gt; prefixCount = new HashMap&lt;&gt;();
+    prefixCount.put(0, 1);
+    int sum = 0, count = 0;
+    for (int num : nums) {
+        sum += num;
+        count += prefixCount.getOrDefault(sum - k, 0);
+        prefixCount.merge(sum, 1, Integer::sum);
+    }
+    return count;
+}
+// Time: O(n)  Space: O(n)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>3. Product of Array Except Self</h4>
+      <div class="pbadges"><span class="badge medium">Medium</span><span class="badge freq">Very common</span><a class="lc-link" href="https://leetcode.com/problems/product-of-array-except-self/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Return an array where each index holds the product of all other elements — without division, O(1) extra space (excluding output).</p>
+      <p class="clue"><b>Clue:</b> this is prefix <i>product</i> from the left combined with suffix product from the right, computed in two passes over the same output array.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public int[] productExceptSelf(int[] nums) {
+    int n = nums.length;
+    int[] result = new int[n];
+    result[0] = 1;
+    for (int i = 1; i &lt; n; i++) {
+        result[i] = result[i - 1] * nums[i - 1];   // prefix product
+    }
+    int suffix = 1;
+    for (int i = n - 1; i &gt;= 0; i--) {
+        result[i] *= suffix;                        // fold in suffix product
+        suffix *= nums[i];
+    }
+    return result;
+}
+// Time: O(n)  Space: O(1) extra</code></pre>
+      </details>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<section id="kadane">
+  <h2><span class="tag">Pattern</span>Kadane's Algorithm</h2>
+  <p class="lede">A single-pass dynamic-programming trick for "best contiguous subarray" problems: at every index, decide whether to extend the running subarray or start fresh from here.</p>
+
+  <h3>Interactive: step through the classic example</h3>
+  <p class="lede">arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4] — find the maximum sum contiguous subarray.</p>
+
+  <div class="card">
+    <div class="arr-row" id="kd-arr-row"></div>
+    <div class="arr-row" id="kd-idx-row"></div>
+    <div class="demo-status" id="kd-status">Click "Next step" to run Kadane's, one element at a time.</div>
+    <div class="demo-controls">
+      <button class="step-btn secondary" id="kd-reset">Reset</button>
+      <button class="step-btn" id="kd-next">Next step →</button>
+    </div>
+  </div>
+
+  <div class="callout drill">
+    <b>Muscle-memory template</b>
+    At each step: "does adding me help the running streak, or am I better off alone?"
+  </div>
+  <pre><code>int maxSoFar = arr[0];
+int maxEndingHere = arr[0];
+for (int i = 1; i &lt; arr.length; i++) {
+    maxEndingHere = Math.max(arr[i], maxEndingHere + arr[i]);
+    maxSoFar = Math.max(maxSoFar, maxEndingHere);
+}
+return maxSoFar;</code></pre>
+
+  <h3>Must-know questions</h3>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>1. Maximum Subarray</h4>
+      <div class="pbadges"><span class="badge medium">Medium</span><span class="badge freq">Very common</span><a class="lc-link" href="https://leetcode.com/problems/maximum-subarray/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>The template above, verbatim. Answer for the example is <b>6</b>, from subarray <code>[4, -1, 2, 1]</code>.</p>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>2. Maximum Product Subarray</h4>
+      <div class="pbadges"><span class="badge medium">Medium</span><span class="badge freq">Common</span><a class="lc-link" href="https://leetcode.com/problems/maximum-product-subarray/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>Same idea, but for products a negative number can flip a very small (very negative) running product into the new maximum — so you must track the running <b>min</b> as well as the running max.</p>
+      <p class="clue"><b>Clue:</b> "product" + negatives allowed → track both running max and running min, swap them when you hit a negative number.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public int maxProduct(int[] nums) {
+    int maxProd = nums[0], minProd = nums[0], result = nums[0];
+    for (int i = 1; i &lt; nums.length; i++) {
+        int num = nums[i];
+        if (num &lt; 0) {
+            int temp = maxProd;
+            maxProd = minProd;
+            minProd = temp;
+        }
+        maxProd = Math.max(num, maxProd * num);
+        minProd = Math.min(num, minProd * num);
+        result = Math.max(result, maxProd);
+    }
+    return result;
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>3. Maximum Sum Circular Subarray</h4>
+      <div class="pbadges"><span class="badge medium">Medium</span><span class="badge freq">Common</span><a class="lc-link" href="https://leetcode.com/problems/maximum-sum-circular-subarray/" target="_blank" rel="noopener" title="Open on LeetCode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a></div>
+    </div>
+    <div class="pbody">
+      <p>The array wraps around — the best subarray may cross the end back to the start.</p>
+      <p class="clue"><b>Clue:</b> "circular" → the wrap-around case equals <code>total sum − minimum subarray sum</code>. Run Kadane's twice: once for the normal max, once (inverted) for the min.</p>
+      <details><summary>Java solution</summary>
+<pre><code>public int maxSubarraySumCircular(int[] nums) {
+    int total = 0;
+    int maxSum = nums[0], curMax = 0;
+    int minSum = nums[0], curMin = 0;
+    for (int num : nums) {
+        curMax = Math.max(curMax + num, num);
+        maxSum = Math.max(maxSum, curMax);
+        curMin = Math.min(curMin + num, num);
+        minSum = Math.min(minSum, curMin);
+        total += num;
+    }
+    if (maxSum &lt; 0) return maxSum;              // all elements negative
+    return Math.max(maxSum, total - minSum);
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<section id="schedule">
+  <h2><span class="tag">Plan</span>14-day schedule to Aug 29</h2>
+  <p class="lede">Built for someone with a day job — roughly 45–60 focused minutes a day. Adjust freely, but keep the order: pattern recognition compounds, and mixing patterns too early tends to blur them.</p>
+  <table class="sched">
+    <tr><th class="left-align">Day</th><th class="left-align">Focus</th></tr>
+    <tr><td class="day">Day 1–2</td><td class="left-align">Arrays fundamentals + read Two Pointers section. Do Move Zeroes, Rotate Array, Best Time to Buy/Sell Stock.</td></tr>
+    <tr><td class="day">Day 3–4</td><td class="left-align">Two Pointers practice: Two Sum II, Container With Most Water, 3Sum, Remove Duplicates. Write both templates from memory before looking.</td></tr>
+    <tr><td class="day">Day 5–7</td><td class="left-align">Sliding Window: fixed window first (Max Sum Subarray of Size K), then variable window (Longest Substring Without Repeating Characters, Minimum Window Substring, Longest Subarray Sum ≤ K).</td></tr>
+    <tr><td class="day">Day 8–9</td><td class="left-align">Prefix Sum: Range Sum Query, Subarray Sum Equals K, Product of Array Except Self.</td></tr>
+    <tr><td class="day">Day 10</td><td class="left-align">Kadane's: Maximum Subarray, Maximum Product Subarray, Maximum Circular Subarray Sum.</td></tr>
+    <tr><td class="day">Day 11–12</td><td class="left-align">Start the <a href="#practice">Practice Set</a> below — Round 1, then Round 2 as time allows. Timed, no peeking at the pattern name first. This is what actually builds interview-speed recognition.</td></tr>
+    <tr><td class="day">Day 13</td><td class="left-align">Full self-test (below) under time pressure, like a real round. Grade yourself honestly.</td></tr>
+    <tr><td class="day">Day 14</td><td class="left-align">Light review only — reread the cheat sheet and templates. No new problems. Sleep well.</td></tr>
+    <tr><td class="day">Day 15</td><td class="left-align"><b>Mock interview.</b></td></tr>
+  </table>
+</section>
+
+<hr class="sep">
+
+<section id="selftest">
+  <h2><span class="tag">Practice</span>Self-test — name the pattern first</h2>
+  <p class="lede">For each prompt, say the pattern out loud before you touch the keyboard. Click to reveal the answer.</p>
+
+  <table>
+    <tr><th class="left-align">Prompt</th><th>Reveal</th></tr>
+    <tr><td class="left-align">Given a sorted array, find if any two numbers sum to a target.</td>
+        <td><details><summary>Answer</summary>Two Pointers — opposite ends</details></td></tr>
+    <tr><td class="left-align">Find the smallest substring containing all characters of another string.</td>
+        <td><details><summary>Answer</summary>Sliding Window — variable size</details></td></tr>
+    <tr><td class="left-align">Given many queries asking for the sum between two indices, on a fixed array.</td>
+        <td><details><summary>Answer</summary>Prefix Sum</details></td></tr>
+    <tr><td class="left-align">Count subarrays (values can be negative) summing to exactly k.</td>
+        <td><details><summary>Answer</summary>Prefix Sum + HashMap</details></td></tr>
+    <tr><td class="left-align">Find the contiguous subarray with the largest sum.</td>
+        <td><details><summary>Answer</summary>Kadane's Algorithm</details></td></tr>
+    <tr><td class="left-align">Find the longest run of unique characters in a string.</td>
+        <td><details><summary>Answer</summary>Sliding Window — variable size</details></td></tr>
+    <tr><td class="left-align">Find two lines that trap the most water between them.</td>
+        <td><details><summary>Answer</summary>Two Pointers — opposite ends</details></td></tr>
+    <tr><td class="left-align">The array wraps around; find the max sum subarray including the wrap case.</td>
+        <td><details><summary>Answer</summary>Kadane's — circular variant</details></td></tr>
+  </table>
+</section>
+
+<hr class="sep">
+
+<section id="practice">
+  <h2><span class="tag">Practice</span>Unseen Practice Set — 17 problems, no solutions</h2>
+  <p class="lede">Problems you haven't drilled above, across the same 5 patterns — grouped into 4 rounds so wherever you stop, you've touched every pattern at least once.</p>
+
+  <div class="card">
+    <b>Rules — the point is recognition speed, not solving:</b>
+    <ul>
+      <li>Set a 20–25 min timer per problem. Before writing any code, say the pattern name out loud.</li>
+      <li>If you can't name the pattern in ~2 minutes, open the "Reveal" — it only gives the pattern name, not the code. Then still write the solution yourself.</li>
+      <li>If you're stuck on the template itself, scroll back up to the pattern's muscle-memory template — don't look at LeetCode's solution tab.</li>
+      <li>Check the box once you've solved it <i>and</i> correctly named the pattern before starting.</li>
+    </ul>
+  </div>
+
+  <div class="callout drill">
+    <b>Pacing, honestly</b>
+    At ~2 problems/day around a full workday, Rounds 1–2 (10 problems) is the realistic target before the mock — that's your minimum viable coverage, one pass through every pattern twice. Rounds 3–4 are stretch goals if you find extra time; don't stress if you don't reach them.
+  </div>
+
+  <h3><span class="tag">Round 1</span>Do these first — one per pattern, highest-value discriminators</h3>
+  <table class="practice">
+    <tr><th class="chk">✓</th><th>Problem</th><th>Pattern</th><th>Difficulty</th></tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/two-sum/" target="_blank">1. Two Sum</a>
+        <div class="why">Same shape as Two Sum II, but the array is <i>unsorted</i>.</div></td>
+      <td>Arrays<br><details><summary>Reveal</summary><p>Not two-pointer — array isn't sorted. One-pass hashmap.</p></details></td>
+      <td><span class="badge easy">Easy</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/3sum-closest/" target="_blank">2. 3Sum Closest</a>
+        <div class="why">Same setup as 3Sum, different objective.</div></td>
+      <td>Two Pointers<br><details><summary>Reveal</summary><p>Opposite ends, sorted + fixed anchor — but track closest diff instead of exact-zero match.</p></details></td>
+      <td><span class="badge medium">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/longest-repeating-character-replacement/" target="_blank">3. Longest Repeating Character Replacement</a>
+        <div class="why">One step past Longest Substring Without Repeating.</div></td>
+      <td>Sliding Window<br><details><summary>Reveal</summary><p>Variable window; shrink when (window size − count of most frequent char) &gt; k.</p></details></td>
+      <td><span class="badge medium">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/continuous-subarray-sum/" target="_blank">4. Continuous Subarray Sum</a>
+        <div class="why">Same family as Subarray Sum Equals K, different condition.</div></td>
+      <td>Prefix Sum<br><details><summary>Reveal</summary><p>Prefix sum + hashmap, but keyed on <code>sum % k</code> instead of the raw sum.</p></details></td>
+      <td><span class="badge medium">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/maximum-absolute-sum-of-any-subarray/" target="_blank">5. Maximum Absolute Sum of Any Subarray</a>
+        <div class="why">Extends the max+min tracking idea from Max Product Subarray.</div></td>
+      <td>Kadane's<br><details><summary>Reveal</summary><p>Track running max <i>and</i> running min prefix sum simultaneously; answer is the larger gap.</p></details></td>
+      <td><span class="badge medium">Medium</span></td>
+    </tr>
+  </table>
+
+  <h3><span class="tag">Round 2</span>Second pass through every pattern</h3>
+  <table class="practice">
+    <tr><th class="chk">✓</th><th>Problem</th><th>Pattern</th><th>Difficulty</th></tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/merge-sorted-array/" target="_blank">6. Merge Sorted Array</a></td>
+      <td>Arrays<br><details><summary>Reveal</summary><p>Two pointers, but walk backward from the end to avoid overwriting.</p></details></td>
+      <td><span class="badge easy">Easy</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/sort-colors/" target="_blank">7. Sort Colors</a></td>
+      <td>Two Pointers<br><details><summary>Reveal</summary><p>Three pointers (low/mid/high) — Dutch National Flag partition, one pass.</p></details></td>
+      <td><span class="badge medium">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/fruit-into-baskets/" target="_blank">8. Fruit Into Baskets</a></td>
+      <td>Sliding Window<br><details><summary>Reveal</summary><p>Variable window, "at most 2 distinct values" — shrink when a 3rd type appears.</p></details></td>
+      <td><span class="badge medium">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/find-pivot-index/" target="_blank">9. Find Pivot Index</a></td>
+      <td>Prefix Sum<br><details><summary>Reveal</summary><p>Index where left prefix sum equals right suffix sum.</p></details></td>
+      <td><span class="badge easy">Easy</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/" target="_blank">10. Best Time to Buy and Sell Stock II</a></td>
+      <td>Kadane's<br><details><summary>Reveal</summary><p>Unlimited transactions → greedily sum every positive day-over-day gain.</p></details></td>
+      <td><span class="badge easy">Easy</span></td>
+    </tr>
+  </table>
+
+  <h3><span class="tag">Round 3</span>Stretch — if Rounds 1–2 felt easy</h3>
+  <table class="practice">
+    <tr><th class="chk">✓</th><th>Problem</th><th>Pattern</th><th>Difficulty</th></tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/find-all-duplicates-in-an-array/" target="_blank">11. Find All Duplicates in an Array</a></td>
+      <td>Arrays<br><details><summary>Reveal</summary><p>Use the array itself as a hash — negate the value at each seen index.</p></details></td>
+      <td><span class="badge medium">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/valid-palindrome/" target="_blank">12. Valid Palindrome</a></td>
+      <td>Two Pointers<br><details><summary>Reveal</summary><p>Opposite ends on a string; skip non-alphanumeric chars as you go.</p></details></td>
+      <td><span class="badge easy">Easy</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/max-consecutive-ones-iii/" target="_blank">13. Max Consecutive Ones III</a></td>
+      <td>Sliding Window<br><details><summary>Reveal</summary><p>Variable window, "flip at most k zeros" — shrink when zero-count exceeds k.</p></details></td>
+      <td><span class="badge medium">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/subarray-sums-divisible-by-k/" target="_blank">14. Subarray Sums Divisible by K</a></td>
+      <td>Prefix Sum<br><details><summary>Reveal</summary><p>Prefix sum + hashmap keyed on remainder; watch out for negative mod in Java.</p></details></td>
+      <td><span class="badge medium">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/k-concatenation-maximum-sum/" target="_blank">15. K-Concatenation Maximum Sum</a></td>
+      <td>Kadane's<br><details><summary>Reveal</summary><p>Circular Kadane's idea applied to the array repeated k times — reason about it with just 2 copies + total sum.</p></details></td>
+      <td><span class="badge hard">Hard</span> <span class="badge bonus">Bonus</span></td>
+    </tr>
+  </table>
+
+  <h3><span class="tag">Round 4</span>Bonus — extra reps for the two widest patterns</h3>
+  <table class="practice">
+    <tr><th class="chk">✓</th><th>Problem</th><th>Pattern</th><th>Difficulty</th></tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/trapping-rain-water/" target="_blank">16. Trapping Rain Water</a></td>
+      <td>Two Pointers<br><details><summary>Reveal</summary><p>Opposite ends; track running max-height-so-far from each side.</p></details></td>
+      <td><span class="badge hard">Hard</span> <span class="badge bonus">Bonus</span></td>
+    </tr>
+    <tr>
+      <td class="chk"><input type="checkbox"></td>
+      <td><a href="https://leetcode.com/problems/permutation-in-string/" target="_blank">17. Permutation in String</a></td>
+      <td>Sliding Window<br><details><summary>Reveal</summary><p>Fixed-size window matching a frequency map — same shape as Max Sum Subarray of Size K, different payload.</p></details></td>
+      <td><span class="badge medium">Medium</span></td>
+    </tr>
+  </table>
+</section>
+
+</div>
+
+<footer>
+  Built for Krishna's DSA prep · patterns sourced against AlgoMaster's Arrays / Two Pointers / Sliding Window / Prefix Sum / Kadane's curriculum
+</footer>
+
+<script>
+// ---------- Countdown ----------
+(function(){
+  var target = new Date("2026-08-29T21:00:00+05:30").getTime();
+  function update(){
+    var now = new Date().getTime();
+    var diff = target - now;
+    var el = document.getElementById("countdown-text");
+    if (diff <= 0) { el.innerHTML = "<b>It's interview time — good luck.</b>"; return; }
+    var days = Math.floor(diff / (1000*60*60*24));
+    var hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+    el.innerHTML = "<b>" + days + "</b> days, <b>" + hours + "</b> hours to go";
+  }
+  update();
+  setInterval(update, 60000);
+})();
+
+// ---------- Two Pointers demo: Two Sum II on [2,7,11,15], target=9 ----------
+(function(){
+  var arr = [2,7,11,15];
+  var target = 9;
+  var steps = [
+    {left:0, right:3, msg:"left=0 (val 2), right=3 (val 15) → sum = 17 &gt; 9, so move right ← (need a smaller sum)."},
+    {left:0, right:2, msg:"left=0 (val 2), right=2 (val 11) → sum = 13 &gt; 9, so move right ← again."},
+    {left:0, right:1, msg:"left=0 (val 2), right=1 (val 7) → sum = 9. Found it! Return indices [1, 2] (1-indexed)."}
+  ];
+  var stepIdx = -1;
+  var arrRow = document.getElementById("tp-arr-row");
+  var idxRow = document.getElementById("tp-idx-row");
+  var ptrRow = document.getElementById("tp-ptr-row");
+  var status = document.getElementById("tp-status");
+  var nextBtn = document.getElementById("tp-next");
+  var resetBtn = document.getElementById("tp-reset");
+
+  function render(){
+    arrRow.innerHTML = "";
+    idxRow.innerHTML = "";
+    ptrRow.innerHTML = "";
+    var cur = stepIdx >= 0 ? steps[stepIdx] : null;
+    for (var i=0;i<arr.length;i++){
+      var cell = document.createElement("div");
+      cell.className = "cell";
+      cell.textContent = arr[i];
+      if (cur && i === cur.left && i === cur.right) cell.classList.add("L");
+      else if (cur && i === cur.left) cell.classList.add("L");
+      else if (cur && i === cur.right) cell.classList.add("R");
+      arrRow.appendChild(cell);
+
+      var idxCell = document.createElement("div");
+      idxCell.className = "cell idx";
+      idxCell.textContent = i;
+      idxRow.appendChild(idxCell);
+
+      var ptr = document.createElement("div");
+      ptr.className = "ptr";
+      if (cur && i === cur.left && i === cur.right) { ptr.textContent = "L/R"; ptr.classList.add("L"); }
+      else if (cur && i === cur.left) { ptr.textContent = "L"; ptr.classList.add("L"); }
+      else if (cur && i === cur.right) { ptr.textContent = "R"; ptr.classList.add("R"); }
+      ptrRow.appendChild(ptr);
+    }
+    status.innerHTML = cur ? cur.msg : "Array = [2, 7, 11, 15], target = 9. Click \"Next step\" to begin.";
+    nextBtn.disabled = stepIdx >= steps.length - 1;
+  }
+  nextBtn.addEventListener("click", function(){
+    if (stepIdx < steps.length - 1) { stepIdx++; render(); }
+  });
+  resetBtn.addEventListener("click", function(){ stepIdx = -1; render(); });
+  render();
+})();
+
+// ---------- Sliding Window demo: max sum subarray size k=3 on [2,1,5,1,3,2] ----------
+(function(){
+  var arr = [2,1,5,1,3,2];
+  var k = 3;
+  var steps = [
+    {start:0, sum:8, max:8, msg:"Build first window [0..2] = 2+1+5 = 8. max so far = 8."},
+    {start:1, sum:7, max:8, msg:"Slide: add arr[3]=1, drop arr[0]=2 → 8 + 1 − 2 = 7. max so far stays 8."},
+    {start:2, sum:9, max:9, msg:"Slide: add arr[4]=3, drop arr[1]=1 → 7 + 3 − 1 = 9. New max = 9."},
+    {start:3, sum:6, max:9, msg:"Slide: add arr[5]=2, drop arr[2]=5 → 9 + 2 − 5 = 6. max stays 9. Done — answer is 9."}
+  ];
+  var stepIdx = -1;
+  var arrRow = document.getElementById("sw-arr-row");
+  var idxRow = document.getElementById("sw-idx-row");
+  var status = document.getElementById("sw-status");
+  var nextBtn = document.getElementById("sw-next");
+  var resetBtn = document.getElementById("sw-reset");
+
+  function render(){
+    arrRow.innerHTML = "";
+    idxRow.innerHTML = "";
+    var cur = stepIdx >= 0 ? steps[stepIdx] : null;
+    for (var i=0;i<arr.length;i++){
+      var cell = document.createElement("div");
+      cell.className = "cell";
+      cell.textContent = arr[i];
+      if (cur && i >= cur.start && i < cur.start + k) cell.classList.add("window");
+      arrRow.appendChild(cell);
+      var idxCell = document.createElement("div");
+      idxCell.className = "cell idx";
+      idxCell.textContent = i;
+      idxRow.appendChild(idxCell);
+    }
+    status.innerHTML = cur ? (cur.msg + " <b>(window sum = " + cur.sum + ", max = " + cur.max + ")</b>") : "Click \"Next step\" to slide the window.";
+    nextBtn.disabled = stepIdx >= steps.length - 1;
+  }
+  nextBtn.addEventListener("click", function(){
+    if (stepIdx < steps.length - 1) { stepIdx++; render(); }
+  });
+  resetBtn.addEventListener("click", function(){ stepIdx = -1; render(); });
+  render();
+})();
+
+// ---------- Kadane's demo on [-2,1,-3,4,-1,2,1,-5,4] ----------
+(function(){
+  var arr = [-2,1,-3,4,-1,2,1,-5,4];
+  var steps = [];
+  var curEnd = arr[0], curMax = arr[0];
+  steps.push({i:0, curEnd:curEnd, curMax:curMax, msg:"Start at i=0: maxEndingHere = maxSoFar = -2."});
+  for (var i=1;i<arr.length;i++){
+    var extend = curEnd + arr[i];
+    var restart = arr[i];
+    var choice = Math.max(extend, restart);
+    var choiceMsg = (extend >= restart)
+      ? ("extend the streak: " + curEnd + " + " + arr[i] + " = " + extend)
+      : ("start fresh at this element: " + arr[i] + " beats extending (" + extend + ")");
+    curEnd = choice;
+    curMax = Math.max(curMax, curEnd);
+    steps.push({i:i, curEnd:curEnd, curMax:curMax, msg:"i="+i+" (val "+arr[i]+"): "+choiceMsg+". maxEndingHere = "+curEnd+"."});
+  }
+  var stepIdx = -1;
+  var arrRow = document.getElementById("kd-arr-row");
+  var idxRow = document.getElementById("kd-idx-row");
+  var status = document.getElementById("kd-status");
+  var nextBtn = document.getElementById("kd-next");
+  var resetBtn = document.getElementById("kd-reset");
+
+  function render(){
+    arrRow.innerHTML = "";
+    idxRow.innerHTML = "";
+    var cur = stepIdx >= 0 ? steps[stepIdx] : null;
+    for (var i=0;i<arr.length;i++){
+      var cell = document.createElement("div");
+      cell.className = "cell";
+      cell.textContent = arr[i];
+      if (cur && i === cur.i) cell.classList.add("L");
+      else if (cur && i < cur.i) cell.classList.add("out");
+      arrRow.appendChild(cell);
+      var idxCell = document.createElement("div");
+      idxCell.className = "cell idx";
+      idxCell.textContent = i;
+      idxRow.appendChild(idxCell);
+    }
+    status.innerHTML = cur ? (cur.msg + " <b>(maxSoFar = " + cur.curMax + ")</b>" + (stepIdx === steps.length-1 ? " Final answer: <b>"+cur.curMax+"</b>." : "")) : "Click \"Next step\" to run Kadane's, one element at a time.";
+    nextBtn.disabled = stepIdx >= steps.length - 1;
+  }
+  nextBtn.addEventListener("click", function(){
+    if (stepIdx < steps.length - 1) { stepIdx++; render(); }
+  });
+  resetBtn.addEventListener("click", function(){ stepIdx = -1; render(); });
+  render();
+})();
+</script>
+
+</body>
+</html>

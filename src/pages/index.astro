@@ -1,0 +1,113 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 5);
+
+const projects = [
+  {
+    name: 'ArchAdvisor',
+    tagline:
+      'A multi-agent architecture review system — feed it a design doc, get back structured review notes from a panel of agents instead of waiting on a human ARB slot.',
+    stack: ['Python', 'LangGraph', 'ChromaDB', 'FastAPI', 'React 19'],
+    status: 'in use',
+  },
+  {
+    name: 'Agri-Input SaaS Platform',
+    tagline:
+      'Multi-tenant SaaS for agri-input dealerships — super-admin panel, per-tenant branding, built end to end from a single-client system into a real multi-tenant product.',
+    stack: ['Java', 'Spring Boot', 'React', 'Vite', 'TypeScript', 'Tailwind', 'Docker'],
+    status: 'shipped',
+  },
+];
+---
+
+<Layout title="Krishna Chaitanya Vulchi — engineering notes">
+  <section class="wrap wrap--wide hero">
+    <p class="eyebrow">Hyderabad, India</p>
+    <h1>Hey, I'm Krishna Chaitanya.</h1>
+    <p class="hero__role">An Engineer, trying to put a dent in this universe.</p>
+    <p class="hero__bio">
+      I'm an Engineer with 10+ years building applications
+      
+    </p>
+    <p class="hero__bio">
+      This site is where I write it down — blog posts on whatever I'm
+      deep in that week, be it DNS internals, AI reliability, or why a
+      PWA misbehaves on one specific Android build. Equal parts notebook
+      and portfolio.
+    </p>
+  </section>
+
+  <section class="wrap wrap--wide section">
+    <div class="section__head">
+      <h2>Recent writing</h2>
+      <a class="section__all meta" href="/blog">all posts →</a>
+    </div>
+    {posts.length > 0 ? (
+      <div>
+        {posts.map((post) => (
+          <PostCard
+            href={`/blog/${post.slug}`}
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.date}
+            tags={post.data.tags}
+          />
+        ))}
+      </div>
+    ) : (
+      <p class="meta">Nothing published yet — first post is coming.</p>
+    )}
+  </section>
+
+  <section class="wrap wrap--wide section">
+    <div class="section__head">
+      <h2>Things I've built</h2>
+      <a class="section__all meta" href="/projects">all projects →</a>
+    </div>
+    <div class="project-grid">
+      {projects.map((p) => <ProjectCard {...p} />)}
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero {
+    padding-top: 8px;
+    padding-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+    margin: 10px 0 4px;
+  }
+  .hero__role {
+    font-family: var(--mono);
+    color: var(--steel);
+    margin: 0 0 22px;
+    font-size: 0.95rem;
+  }
+  .hero__bio {
+    color: var(--ink-dim);
+    max-width: 62ch;
+  }
+  .section {
+    margin-top: 56px;
+  }
+  .section__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .section__all { white-space: nowrap; }
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+</style>

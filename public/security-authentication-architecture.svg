@@ -1,0 +1,249 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 880" font-family="'Segoe UI', system-ui, sans-serif">
+
+  <!-- Background -->
+  <rect width="1020" height="880" fill="#0f1117" rx="12"/>
+
+  <!-- ═══════════════════════════════════
+       TITLE
+  ═══════════════════════════════════ -->
+  <text x="510" y="40" text-anchor="middle" font-size="17" font-weight="700" fill="#e2e8f0">Security &amp; Authentication in Spring Boot</text>
+
+  <!-- ═══════════════════════════════════
+       COLUMN HEADERS
+  ═══════════════════════════════════ -->
+  <text x="300" y="64" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">REQUEST FLOW (every request)</text>
+  <text x="760" y="64" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">REFERENCE PANELS</text>
+  <line x1="570" y1="52" x2="570" y2="850" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- ═══════════════════════════════════
+       LEFT COLUMN — request flow
+  ═══════════════════════════════════ -->
+
+  <!-- 1. Browser -->
+  <rect x="60" y="76" width="480" height="52" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="300" y="99" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">Browser / API Client</text>
+  <text x="300" y="117" text-anchor="middle" font-size="10" fill="#64748b">HTTP request  ·  carries JSESSIONID cookie after first login</text>
+
+  <line x1="300" y1="128" x2="300" y2="148" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,148 304,148 300,156" fill="#475569"/>
+
+  <!-- 2. Filter chain -->
+  <rect x="60" y="156" width="480" height="46" rx="8" fill="#1e293b" stroke="#7c3aed" stroke-width="1.8"/>
+  <text x="300" y="177" text-anchor="middle" font-size="12" font-weight="600" fill="#a78bfa">Spring Security Filter Chain</text>
+  <text x="300" y="193" text-anchor="middle" font-size="10" fill="#64748b">SessionManagementFilter  ·  UsernamePasswordAuthenticationFilter  ·  ExceptionTranslationFilter</text>
+
+  <!-- decision: public? -->
+  <line x1="300" y1="202" x2="300" y2="218" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,218 304,218 300,226" fill="#475569"/>
+  <rect x="155" y="226" width="290" height="32" rx="16" fill="#1a1a2e" stroke="#312e81" stroke-width="1.2"/>
+  <text x="300" y="247" text-anchor="middle" font-size="10" fill="#818cf8">Public endpoint?  /api/auth/login  ·  /api/health</text>
+  <!-- yes branch -->
+  <line x1="445" y1="242" x2="520" y2="242" stroke="#10b981" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <text x="483" y="237" text-anchor="middle" font-size="9" fill="#10b981">YES → pass</text>
+  <!-- no branch down -->
+  <line x1="300" y1="258" x2="300" y2="274" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,274 304,274 300,282" fill="#475569"/>
+  <text x="308" y="270" font-size="9" fill="#64748b">NO</text>
+
+  <!-- restore session -->
+  <rect x="60" y="282" width="480" height="40" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="300" y="299" text-anchor="middle" font-size="11" font-weight="600" fill="#60a5fa">Restore session from JSESSIONID cookie</text>
+  <text x="300" y="315" text-anchor="middle" font-size="10" fill="#64748b">HttpSessionSecurityContextRepository reads SecurityContext from session</text>
+
+  <!-- decision: authenticated? -->
+  <line x1="300" y1="322" x2="300" y2="338" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,338 304,338 300,346" fill="#475569"/>
+  <rect x="155" y="346" width="290" height="32" rx="16" fill="#1a1a2e" stroke="#7f1d1d" stroke-width="1.2"/>
+  <text x="300" y="367" text-anchor="middle" font-size="10" fill="#fca5a5">Authenticated?  (user in SecurityContext)</text>
+  <!-- no → 401 -->
+  <line x1="155" y1="362" x2="90" y2="362" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <rect x="30" y="350" width="58" height="24" rx="4" fill="#450a0a"/>
+  <text x="59" y="366" text-anchor="middle" font-size="10" font-weight="700" fill="#ef4444">401</text>
+  <text x="122" y="357" font-size="9" fill="#ef4444">NO</text>
+  <!-- yes down -->
+  <line x1="300" y1="378" x2="300" y2="394" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,394 304,394 300,402" fill="#475569"/>
+  <text x="308" y="390" font-size="9" fill="#64748b">YES</text>
+
+  <!-- decision: role? -->
+  <rect x="155" y="402" width="290" height="32" rx="16" fill="#1a1a2e" stroke="#7f1d1d" stroke-width="1.2"/>
+  <text x="300" y="423" text-anchor="middle" font-size="10" fill="#fca5a5">Has required role?  (@PreAuthorize check)</text>
+  <!-- no → 403 -->
+  <line x1="155" y1="418" x2="90" y2="418" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <rect x="30" y="406" width="58" height="24" rx="4" fill="#450a0a"/>
+  <text x="59" y="422" text-anchor="middle" font-size="10" font-weight="700" fill="#ef4444">403</text>
+  <text x="122" y="413" font-size="9" fill="#ef4444">NO</text>
+  <!-- yes down -->
+  <line x1="300" y1="434" x2="300" y2="450" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,450 304,450 300,458" fill="#475569"/>
+  <text x="308" y="446" font-size="9" fill="#64748b">YES</text>
+
+  <!-- 3. TenantContextFilter -->
+  <rect x="60" y="458" width="480" height="52" rx="8" fill="#1e293b" stroke="#065f46" stroke-width="1.5"/>
+  <text x="300" y="480" text-anchor="middle" font-size="12" font-weight="600" fill="#34d399">TenantContextFilter</text>
+  <text x="300" y="497" text-anchor="middle" font-size="10" fill="#64748b">TenantContext.setTenantId(principal.getTenantId())  ·  ThreadLocal  ·  finally { TenantContext.clear() }</text>
+
+  <line x1="300" y1="510" x2="300" y2="526" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,526 304,526 300,534" fill="#475569"/>
+
+  <!-- 4. Controller -->
+  <rect x="60" y="534" width="480" height="52" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="300" y="557" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">Controller  →  Service  →  Repository</text>
+  <text x="300" y="574" text-anchor="middle" font-size="10" fill="#64748b">All DB queries auto-filtered to tenant  ·  Business logic runs</text>
+
+  <!-- ═══════════════════════════════════
+       LOGIN FLOW (bottom-left)
+  ═══════════════════════════════════ -->
+  <rect x="60" y="606" width="480" height="110" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="300" y="628" text-anchor="middle" font-size="12" font-weight="600" fill="#fbbf24">Login Flow  —  POST /api/auth/login</text>
+
+  <!-- step boxes -->
+  <rect x="76" y="638" width="130" height="64" rx="5" fill="#1a1f10" stroke="#365314" stroke-width="1"/>
+  <text x="141" y="656" text-anchor="middle" font-size="9" font-weight="600" fill="#a3e635">1. Find user</text>
+  <text x="141" y="670" text-anchor="middle" font-size="9" fill="#64748b">staffUserRepository</text>
+  <text x="141" y="683" text-anchor="middle" font-size="9" fill="#64748b">.findByUsername()</text>
+  <text x="141" y="696" text-anchor="middle" font-size="9" fill="#64748b">→ 401 if not found</text>
+
+  <rect x="222" y="638" width="130" height="64" rx="5" fill="#1a1520" stroke="#4c1d95" stroke-width="1"/>
+  <text x="287" y="656" text-anchor="middle" font-size="9" font-weight="600" fill="#c4b5fd">2. BCrypt check</text>
+  <text x="287" y="670" text-anchor="middle" font-size="9" fill="#64748b">passwordEncoder</text>
+  <text x="287" y="683" text-anchor="middle" font-size="9" fill="#64748b">.matches(raw, hash)</text>
+  <text x="287" y="696" text-anchor="middle" font-size="9" fill="#64748b">→ 401 if mismatch</text>
+
+  <rect x="368" y="638" width="156" height="64" rx="5" fill="#0f1a2e" stroke="#1e3a5f" stroke-width="1"/>
+  <text x="446" y="656" text-anchor="middle" font-size="9" font-weight="600" fill="#60a5fa">3. Save to session</text>
+  <text x="446" y="670" text-anchor="middle" font-size="9" fill="#64748b">SecurityContextHolder</text>
+  <text x="446" y="683" text-anchor="middle" font-size="9" fill="#64748b">→ JSESSIONID cookie</text>
+  <text x="446" y="696" text-anchor="middle" font-size="9" fill="#64748b">set on response</text>
+
+  <!-- arrows between login steps -->
+  <line x1="206" y1="670" x2="222" y2="670" stroke="#475569" stroke-width="1"/>
+  <polygon points="220,667 226,670 220,673" fill="#475569"/>
+  <line x1="352" y1="670" x2="368" y2="670" stroke="#475569" stroke-width="1"/>
+  <polygon points="366,667 372,670 366,673" fill="#475569"/>
+
+  <!-- ═══════════════════════════════════
+       RIGHT COLUMN PANELS
+  ═══════════════════════════════════ -->
+
+  <!-- Panel 1: StaffUserPrincipal -->
+  <rect x="590" y="76" width="390" height="148" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="785" y="98" text-anchor="middle" font-size="12" font-weight="600" fill="#f472b6">StaffUserPrincipal  implements UserDetails</text>
+  <text x="600" y="116" font-size="10" fill="#64748b">  UUID userId        — for audit logs</text>
+  <text x="600" y="132" font-size="10" fill="#64748b">  UUID tenantId      — scopes all DB queries</text>
+  <text x="600" y="148" font-size="10" fill="#64748b">  String username</text>
+  <text x="600" y="164" font-size="10" fill="#64748b">  StaffRole role     — STAFF | ADMIN | SUPER_ADMIN</text>
+  <text x="600" y="180" font-size="10" fill="#64748b">  boolean active</text>
+  <rect x="600" y="190" width="370" height="26" rx="4" fill="#1a1a2e"/>
+  <text x="785" y="207" text-anchor="middle" font-size="9" fill="#818cf8">getAuthorities() → ROLE_STAFF | ROLE_ADMIN | ROLE_SUPER_ADMIN</text>
+  <text x="785" y="220" text-anchor="middle" font-size="9" fill="#64748b">implements Serializable — session survives app restart</text>
+
+  <!-- Panel 2: SecurityConfig rules -->
+  <rect x="590" y="238" width="390" height="130" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="785" y="260" text-anchor="middle" font-size="12" font-weight="600" fill="#a78bfa">SecurityConfig  —  URL rules</text>
+  <rect x="600" y="268" width="370" height="18" rx="3" fill="#0f1117"/>
+  <text x="785" y="281" text-anchor="middle" font-size="9" fill="#64748b">OPTIONS /**                 → permitAll()   (CORS preflight)</text>
+  <rect x="600" y="288" width="370" height="18" rx="3" fill="#0f1117"/>
+  <text x="785" y="301" text-anchor="middle" font-size="9" fill="#64748b">/api/auth/login, /api/health → permitAll()   (public)</text>
+  <rect x="600" y="308" width="370" height="18" rx="3" fill="#0f1117"/>
+  <text x="785" y="321" text-anchor="middle" font-size="9" fill="#60a5fa">anyRequest()               → authenticated()  (protected)</text>
+  <text x="785" y="344" text-anchor="middle" font-size="9" fill="#64748b">csrf disabled  ·  SessionCreationPolicy.IF_REQUIRED</text>
+  <text x="785" y="358" text-anchor="middle" font-size="9" fill="#64748b">@EnableMethodSecurity — required for @PreAuthorize to work</text>
+
+  <!-- Panel 3: RBAC -->
+  <rect x="590" y="382" width="390" height="130" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="785" y="404" text-anchor="middle" font-size="12" font-weight="600" fill="#34d399">Role-Based Access Control</text>
+
+  <rect x="600" y="412" width="178" height="86" rx="5" fill="#0f1f17" stroke="#065f46" stroke-width="1"/>
+  <text x="689" y="429" text-anchor="middle" font-size="9" font-weight="600" fill="#6ee7b7">@PreAuthorize  (Spring)</text>
+  <text x="689" y="444" text-anchor="middle" font-size="9" fill="#64748b">checks role from</text>
+  <text x="689" y="457" text-anchor="middle" font-size="9" fill="#64748b">getAuthorities()</text>
+  <text x="689" y="470" text-anchor="middle" font-size="9" fill="#64748b">→ 403 if role missing</text>
+  <text x="689" y="483" text-anchor="middle" font-size="9" fill="#ef4444">no @EnableMethodSecurity</text>
+  <text x="689" y="496" text-anchor="middle" font-size="9" fill="#ef4444">= silently ignored</text>
+
+  <rect x="792" y="412" width="178" height="86" rx="5" fill="#1a1520" stroke="#4c1d95" stroke-width="1"/>
+  <text x="881" y="429" text-anchor="middle" font-size="9" font-weight="600" fill="#c4b5fd">@RequiresFeature  (AOP)</text>
+  <text x="881" y="444" text-anchor="middle" font-size="9" fill="#64748b">checks feature flag</text>
+  <text x="881" y="457" text-anchor="middle" font-size="9" fill="#64748b">per tenant</text>
+  <text x="881" y="470" text-anchor="middle" font-size="9" fill="#64748b">→ 403 if flag off</text>
+  <text x="881" y="483" text-anchor="middle" font-size="9" fill="#64748b">even ADMIN blocked</text>
+  <text x="881" y="496" text-anchor="middle" font-size="9" fill="#64748b">if feature not paid</text>
+
+  <!-- Panel 4: Session vs JWT -->
+  <rect x="590" y="526" width="390" height="148" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="785" y="548" text-anchor="middle" font-size="12" font-weight="600" fill="#fbbf24">Session-based vs JWT</text>
+
+  <!-- header row -->
+  <rect x="600" y="554" width="370" height="18" rx="0" fill="#1a1a2e"/>
+  <text x="700" y="566" text-anchor="middle" font-size="9" font-weight="600" fill="#94a3b8"></text>
+  <text x="730" y="566" text-anchor="middle" font-size="9" font-weight="600" fill="#60a5fa">Session (this project)</text>
+  <text x="905" y="566" text-anchor="middle" font-size="9" font-weight="600" fill="#fbbf24">JWT</text>
+
+  <text x="640" y="584" font-size="9" fill="#64748b">User stored</text>
+  <text x="730" y="584" text-anchor="middle" font-size="9" fill="#94a3b8">server memory / DB</text>
+  <text x="905" y="584" text-anchor="middle" font-size="9" fill="#94a3b8">inside token</text>
+
+  <text x="640" y="600" font-size="9" fill="#64748b">Sent as</text>
+  <text x="730" y="600" text-anchor="middle" font-size="9" fill="#94a3b8">cookie (JSESSIONID)</text>
+  <text x="905" y="600" text-anchor="middle" font-size="9" fill="#94a3b8">Authorization header</text>
+
+  <text x="640" y="616" font-size="9" fill="#64748b">Logout</text>
+  <text x="730" y="616" text-anchor="middle" font-size="9" fill="#34d399">invalidate server-side</text>
+  <text x="905" y="616" text-anchor="middle" font-size="9" fill="#ef4444">token valid till expiry</text>
+
+  <text x="640" y="632" font-size="9" fill="#64748b">Scalability</text>
+  <text x="730" y="632" text-anchor="middle" font-size="9" fill="#fbbf24">harder (shared session)</text>
+  <text x="905" y="632" text-anchor="middle" font-size="9" fill="#34d399">easier (stateless)</text>
+
+  <text x="640" y="648" font-size="9" fill="#64748b">XSS risk</text>
+  <text x="730" y="648" text-anchor="middle" font-size="9" fill="#34d399">low (HttpOnly cookie)</text>
+  <text x="905" y="648" text-anchor="middle" font-size="9" fill="#fbbf24">higher (localStorage)</text>
+
+  <!-- dividers -->
+  <line x1="820" y1="554" x2="820" y2="658" stroke="#334155" stroke-width="1"/>
+  <line x1="600" y1="572" x2="970" y2="572" stroke="#334155" stroke-width="1"/>
+
+  <!-- Panel 5: TenantContextFilter detail -->
+  <rect x="590" y="688" width="390" height="118" rx="8" fill="#1e293b" stroke="#065f46" stroke-width="1.5"/>
+  <text x="785" y="710" text-anchor="middle" font-size="12" font-weight="600" fill="#34d399">TenantContextFilter — thread safety</text>
+  <rect x="600" y="718" width="370" height="78" rx="4" fill="#0f1117"/>
+  <text x="620" y="736" font-size="9" fill="#94a3b8">try {</text>
+  <text x="632" y="750" font-size="9" fill="#94a3b8">if (SUPER_ADMIN &amp;&amp; impersonating)</text>
+  <text x="644" y="764" font-size="9" fill="#94a3b8">TenantContext.setTenantId(impersonated);</text>
+  <text x="632" y="778" font-size="9" fill="#94a3b8">else TenantContext.setTenantId(principal.getTenantId());</text>
+  <text x="620" y="792" font-size="9" fill="#ef4444">} finally { TenantContext.clear(); }  // always runs</text>
+
+  <!-- ═══════════════════════════════════
+       LOGOUT STRIP
+  ═══════════════════════════════════ -->
+  <rect x="60" y="730" width="480" height="58" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="300" y="752" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">Logout  —  POST /api/auth/logout</text>
+  <text x="220" y="772" text-anchor="middle" font-size="10" fill="#64748b">session.invalidate()</text>
+  <text x="380" y="772" text-anchor="middle" font-size="10" fill="#64748b">SecurityContextHolder.clearContext()</text>
+  <text x="300" y="782" text-anchor="middle" font-size="9" fill="#475569">JSESSIONID cookie becomes useless  ·  in-memory context wiped</text>
+
+  <!-- ═══════════════════════════════════
+       BOTTOM — 401 vs 403 callout
+  ═══════════════════════════════════ -->
+  <rect x="60" y="804" width="930" height="46" rx="8" fill="#1a1a1f" stroke="#334155" stroke-width="1.2"/>
+  <rect x="72" y="814" width="58" height="26" rx="4" fill="#450a0a"/>
+  <text x="101" y="832" text-anchor="middle" font-size="13" font-weight="700" fill="#ef4444">401</text>
+  <text x="200" y="832" text-anchor="start" font-size="10" fill="#94a3b8">Not logged in at all — no valid session</text>
+  <rect x="530" y="814" width="58" height="26" rx="4" fill="#451a00"/>
+  <text x="559" y="832" text-anchor="middle" font-size="13" font-weight="700" fill="#f97316">403</text>
+  <text x="600" y="832" text-anchor="start" font-size="10" fill="#94a3b8">Logged in but missing required role or feature flag</text>
+
+  <!-- ═══════════════════════════════════
+       LAYER LABELS (left margin)
+  ═══════════════════════════════════ -->
+  <text x="44" y="106"  text-anchor="middle" font-size="9" fill="#475569" transform="rotate(-90,44,106)">CLIENT</text>
+  <text x="44" y="185"  text-anchor="middle" font-size="9" fill="#7c3aed" transform="rotate(-90,44,185)">FILTER</text>
+  <text x="44" y="322"  text-anchor="middle" font-size="9" fill="#60a5fa" transform="rotate(-90,44,322)">SESSION</text>
+  <text x="44" y="420"  text-anchor="middle" font-size="9" fill="#ef4444" transform="rotate(-90,44,420)">AUTHZ</text>
+  <text x="44" y="490"  text-anchor="middle" font-size="9" fill="#34d399" transform="rotate(-90,44,490)">TENANT</text>
+  <text x="44" y="562"  text-anchor="middle" font-size="9" fill="#94a3b8" transform="rotate(-90,44,562)">APP</text>
+  <text x="44" y="665"  text-anchor="middle" font-size="9" fill="#fbbf24" transform="rotate(-90,44,665)">LOGIN</text>
+  <text x="44" y="762"  text-anchor="middle" font-size="9" fill="#94a3b8" transform="rotate(-90,44,762)">LOGOUT</text>
+
+</svg>

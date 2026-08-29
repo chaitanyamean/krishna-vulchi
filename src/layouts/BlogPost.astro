@@ -1,0 +1,62 @@
+---
+import Layout from './Layout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  tags?: string[];
+}
+const { title, description, date, tags = [] } = Astro.props;
+const formatted = date.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+---
+
+<Layout title={`${title} — Krishna Chaitanya Vulchi`} description={description}>
+  <article class="wrap post">
+    <a class="back meta" href="/blog">← all posts</a>
+    <p class="meta post__date">{formatted}</p>
+    <h1>{title}</h1>
+    {tags.length > 0 && (
+      <div class="post__tags">
+        {tags.map((t) => <span class="tag">{t}</span>)}
+      </div>
+    )}
+    <div class="post__body">
+      <slot />
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .post { padding-bottom: 40px; }
+  .back { display: inline-block; margin-bottom: 28px; }
+  .post__date { margin: 0 0 10px; }
+  .post h1 {
+    font-size: 2.1rem;
+    margin: 0 0 14px;
+  }
+  .post__tags { margin-bottom: 32px; }
+  .post__body {
+    border-top: 1px solid var(--line);
+    padding-top: 32px;
+  }
+  .post__body :global(h2) {
+    font-size: 1.4rem;
+    margin-top: 44px;
+  }
+  .post__body :global(h3) {
+    font-size: 1.15rem;
+    margin-top: 32px;
+  }
+  .post__body :global(p) {
+    margin: 18px 0;
+  }
+  .post__body :global(ul),
+  .post__body :global(ol) {
+    margin: 18px 0;
+    padding-left: 24px;
+  }
+  .post__body :global(li) {
+    margin: 6px 0;
+  }
+</style>

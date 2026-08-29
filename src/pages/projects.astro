@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+
+const projects = [
+  {
+    name: 'ArchAdvisor',
+    tagline:
+      'A multi-agent architecture review system — feed it a design doc, get back structured review notes from a panel of agents instead of waiting on a human ARB slot. Demoed to engineering leadership and now being customized for specific review use cases.',
+    stack: ['Python', 'LangGraph', 'ChromaDB', 'FastAPI', 'React 19'],
+    status: 'in use',
+  },
+  {
+    name: 'Agri-Input SaaS Platform',
+    tagline:
+      "Started as a single-client system for an agri-input dealership, then pivoted into a full multi-tenant SaaS product — super-admin panel, per-tenant branding, deployed on a VPS behind Traefik.",
+    stack: ['Java', 'Spring Boot', 'React', 'Vite', 'TypeScript', 'Tailwind', 'Flyway', 'Docker'],
+    status: 'shipped',
+  },
+];
+---
+
+<Layout title="Projects — Krishna Chaitanya Vulchi" description="Side projects and systems I've built.">
+  <section class="wrap wrap--wide">
+    <p class="eyebrow">projects</p>
+    <h1>Things I've built</h1>
+    <p class="page-intro">
+      A mix of AI-tooling experiments and client work. I list what's real
+      and running, not every half-finished repo.
+    </p>
+    <div class="project-grid">
+      {projects.map((p) => <ProjectCard {...p} />)}
+    </div>
+  </section>
+</Layout>
+
+<style>
+  h1 { margin: 10px 0 12px; font-size: 2rem; }
+  .page-intro {
+    color: var(--ink-dim);
+    max-width: 60ch;
+    margin-bottom: 36px;
+  }
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+</style>

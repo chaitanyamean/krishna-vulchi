@@ -1,0 +1,69 @@
+---
+const nav = [
+  { href: '/', label: 'home' },
+  { href: '/blog', label: 'blog' },
+  { href: '/projects', label: 'projects' },
+  { href: '/dsa', label: 'dsa' },
+];
+const path = Astro.url.pathname;
+---
+
+<header class="wrap wrap--wide site-header">
+  <a class="brand" href="/">
+    <span class="brand__cursor" aria-hidden="true">&gt;</span> Krishna Chaitanya Vulchi
+  </a>
+  <nav aria-label="Primary">
+    {nav.map((item) => (
+      <a
+        href={item.href}
+        class={path === item.href || (item.href !== '/' && path.startsWith(item.href)) ? 'active' : ''}
+      >
+        {item.label}
+      </a>
+    ))}
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 32px;
+    padding-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .brand {
+    font-family: var(--display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .brand:hover { color: var(--ink); }
+  .brand__cursor {
+    color: var(--amber);
+    font-family: var(--mono);
+    margin-right: 2px;
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  nav {
+    display: flex;
+    gap: 22px;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+  }
+  nav a {
+    color: var(--ink-dim);
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+  }
+  nav a:hover,
+  nav a.active {
+    color: var(--amber);
+    border-bottom-color: var(--amber-dim);
+  }
+</style>

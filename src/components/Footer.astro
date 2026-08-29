@@ -1,0 +1,40 @@
+---
+const year = new Date().getFullYear();
+const links = [
+  { href: 'https://github.com/chaitanyamean', label: 'GitHub' },
+  { href: 'https://www.linkedin.com/in/krishna-chaitanya-vulchi-8a41a9b9/', label: 'LinkedIn' },
+];
+---
+
+<footer class="wrap wrap--wide site-footer">
+  <div class="site-footer__row">
+    <span class="meta">© {year} Krishna Chaitanya Vulchi · Hyderabad</span>
+    <div class="site-footer__links">
+      {links.map((l) => (
+        <a href={l.href}>{l.label}</a>
+      ))}
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 96px;
+    padding-top: 24px;
+    padding-bottom: 48px;
+    border-top: 1px solid var(--line);
+  }
+  .site-footer__row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .site-footer__links {
+    display: flex;
+    gap: 18px;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+  }
+</style>

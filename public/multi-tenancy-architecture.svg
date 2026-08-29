@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 900" font-family="'Segoe UI', system-ui, sans-serif">
+
+  <!-- Background -->
+  <rect width="1020" height="900" fill="#0f1117" rx="12"/>
+
+  <!-- Title -->
+  <text x="510" y="40" text-anchor="middle" font-size="17" font-weight="700" fill="#e2e8f0">Multi-Tenancy in Spring Boot</text>
+
+  <!-- Column divider -->
+  <line x1="580" y1="54" x2="580" y2="860" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Column headers -->
+  <text x="290" y="64" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">REQUEST FLOW (per tenant)</text>
+  <text x="800" y="64" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">THE 4 PIECES</text>
+
+  <!-- ═══════════════════════════════════════
+       LEFT COLUMN — request flow
+  ═══════════════════════════════════════ -->
+
+  <!-- 1. Login / Principal -->
+  <rect x="50" y="76" width="500" height="54" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="300" y="99" text-anchor="middle" font-size="12" font-weight="600" fill="#f472b6">StaffUserPrincipal</text>
+  <text x="300" y="117" text-anchor="middle" font-size="10" fill="#64748b">tenantId = shop-A-uuid  ·  stored in HTTP session after login</text>
+
+  <line x1="300" y1="130" x2="300" y2="150" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,150 304,150 300,158" fill="#475569"/>
+
+  <!-- 2. TenantContextFilter -->
+  <rect x="50" y="158" width="500" height="64" rx="8" fill="#1e293b" stroke="#065f46" stroke-width="1.8"/>
+  <text x="300" y="180" text-anchor="middle" font-size="12" font-weight="600" fill="#34d399">TenantContextFilter</text>
+  <text x="300" y="198" text-anchor="middle" font-size="10" fill="#64748b">reads tenantId from principal  ·  calls TenantContext.setTenantId()</text>
+  <rect x="62" y="206" width="476" height="8" rx="3" fill="#0f1f17"/>
+  <text x="300" y="213" text-anchor="middle" font-size="8" fill="#ef4444">finally { TenantContext.clear() }  — always runs, prevents leak to next request</text>
+
+  <line x1="300" y1="222" x2="300" y2="242" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,242 304,242 300,250" fill="#475569"/>
+
+  <!-- 3. ThreadLocal box -->
+  <rect x="50" y="250" width="500" height="54" rx="8" fill="#1e293b" stroke="#1e3a5f" stroke-width="1.5"/>
+  <text x="300" y="273" text-anchor="middle" font-size="12" font-weight="600" fill="#60a5fa">TenantContext  (ThreadLocal)</text>
+  <text x="190" y="292" text-anchor="middle" font-size="10" fill="#64748b">Thread 1 → shop-A-uuid</text>
+  <text x="410" y="292" text-anchor="middle" font-size="10" fill="#64748b">Thread 2 → shop-B-uuid</text>
+  <text x="300" y="292" text-anchor="middle" font-size="10" fill="#334155">|</text>
+
+  <line x1="300" y1="304" x2="300" y2="324" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,324 304,324 300,332" fill="#475569"/>
+
+  <!-- 4. Controller → Service -->
+  <rect x="50" y="332" width="500" height="44" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="300" y="352" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">Controller  →  Service</text>
+  <text x="300" y="368" text-anchor="middle" font-size="10" fill="#64748b">no tenantId parameter anywhere — it's carried on the thread</text>
+
+  <line x1="300" y1="376" x2="300" y2="396" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,396 304,396 300,404" fill="#475569"/>
+
+  <!-- 5. TenantFilterAspect -->
+  <rect x="50" y="404" width="500" height="64" rx="8" fill="#1e293b" stroke="#7c3aed" stroke-width="1.8"/>
+  <text x="300" y="426" text-anchor="middle" font-size="12" font-weight="600" fill="#a78bfa">TenantFilterAspect  (@Before repository)</text>
+  <text x="300" y="444" text-anchor="middle" font-size="10" fill="#64748b">reads TenantContext.getTenantId()</text>
+  <text x="300" y="460" text-anchor="middle" font-size="10" fill="#64748b">session.enableFilter("tenantFilter").setParameter("tenantId", tenantId)</text>
+
+  <line x1="300" y1="468" x2="300" y2="488" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,488 304,488 300,496" fill="#475569"/>
+
+  <!-- 6. Hibernate / JPA -->
+  <rect x="50" y="496" width="500" height="52" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="300" y="518" text-anchor="middle" font-size="12" font-weight="600" fill="#fb923c">Hibernate / JPA Repository</text>
+  <text x="300" y="536" text-anchor="middle" font-size="10" fill="#64748b">auto-appends  WHERE tenant_id = :tenantId  to every @Filter entity query</text>
+
+  <line x1="300" y1="548" x2="300" y2="568" stroke="#475569" stroke-width="1.5"/>
+  <polygon points="296,568 304,568 300,576" fill="#475569"/>
+
+  <!-- 7. PostgreSQL -->
+  <rect x="50" y="576" width="500" height="72" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="300" y="598" text-anchor="middle" font-size="12" font-weight="600" fill="#38bdf8">PostgreSQL</text>
+
+  <!-- tenant rows visual -->
+  <rect x="62" y="606" width="230" height="34" rx="4" fill="#0f1f17" stroke="#065f46" stroke-width="1"/>
+  <text x="177" y="620" text-anchor="middle" font-size="9" font-weight="600" fill="#6ee7b7">shop-A rows only returned</text>
+  <text x="177" y="633" text-anchor="middle" font-size="9" fill="#64748b">tenant_id = shop-A-uuid ✓</text>
+
+  <rect x="308" y="606" width="230" height="34" rx="4" fill="#1a1a1f" stroke="#334155" stroke-width="1"/>
+  <text x="423" y="620" text-anchor="middle" font-size="9" font-weight="600" fill="#475569">shop-B rows never touched</text>
+  <text x="423" y="633" text-anchor="middle" font-size="9" fill="#475569">tenant_id = shop-B-uuid  filtered out</text>
+
+  <!-- super admin bypass box -->
+  <rect x="50" y="664" width="500" height="72" rx="8" fill="#1a1a1f" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="300" y="686" text-anchor="middle" font-size="12" font-weight="600" fill="#fbbf24">Super Admin — bypass</text>
+  <text x="300" y="704" text-anchor="middle" font-size="10" fill="#64748b">TenantContext stays null  →  TenantFilterAspect returns early</text>
+  <text x="300" y="720" text-anchor="middle" font-size="10" fill="#64748b">filter never enabled  →  query returns ALL tenants</text>
+  <text x="300" y="732" text-anchor="middle" font-size="9" fill="#fbbf24">can impersonate a tenant by setting session attr  →  filter activates for that tenant</text>
+
+  <!-- ═══════════════════════════════════════
+       RIGHT COLUMN — the 4 pieces
+  ═══════════════════════════════════════ -->
+
+  <!-- Piece 1 — FilterDef -->
+  <rect x="596" y="76" width="394" height="116" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <rect x="596" y="76" width="394" height="26" rx="8" fill="#1a1a2e"/>
+  <text x="793" y="94" text-anchor="middle" font-size="11" font-weight="700" fill="#818cf8">Piece 1 — @FilterDef  (define once globally)</text>
+  <text x="606" y="116" font-size="9" fill="#64748b">// domain/package-info.java</text>
+  <text x="606" y="130" font-size="9" fill="#94a3b8">@FilterDef(name = "tenantFilter",</text>
+  <text x="606" y="144" font-size="9" fill="#94a3b8">  parameters = @ParamDef(name = "tenantId", type = UUID.class),</text>
+  <text x="606" y="158" font-size="9" fill="#a78bfa">  defaultCondition = "tenant_id = :tenantId")</text>
+  <text x="606" y="172" font-size="9" fill="#64748b">package com.rke.backend.domain;</text>
+  <text x="793" y="186" text-anchor="middle" font-size="9" fill="#64748b">defined once — applies to entire domain package</text>
+
+  <!-- Piece 2 — @Filter on entity -->
+  <rect x="596" y="206" width="394" height="116" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <rect x="596" y="206" width="394" height="26" rx="8" fill="#0f1a2e"/>
+  <text x="793" y="224" text-anchor="middle" font-size="11" font-weight="700" fill="#60a5fa">Piece 2 — @Filter on entity  (opt in)</text>
+  <text x="606" y="246" font-size="9" fill="#64748b">// domain/Farmer.java — opts in</text>
+  <text x="606" y="260" font-size="9" fill="#94a3b8">@Entity  @Table(name = "farmers")</text>
+  <text x="606" y="274" font-size="9" fill="#60a5fa">@Filter(name = TenantFilters.NAME)</text>
+  <text x="606" y="288" font-size="9" fill="#94a3b8">public class Farmer extends TenantScopedEntity { }</text>
+  <text x="606" y="308" font-size="9" fill="#64748b">// Village — no @Filter — global, shared across all tenants</text>
+
+  <!-- Piece 3 — ThreadLocal -->
+  <rect x="596" y="336" width="394" height="126" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <rect x="596" y="336" width="394" height="26" rx="8" fill="#0f1f17"/>
+  <text x="793" y="354" text-anchor="middle" font-size="11" font-weight="700" fill="#34d399">Piece 3 — TenantContext  (ThreadLocal)</text>
+  <text x="606" y="376" font-size="9" fill="#94a3b8">private static final ThreadLocal&lt;UUID&gt; CURRENT = new ThreadLocal&lt;&gt;();</text>
+  <text x="606" y="392" font-size="9" fill="#94a3b8">setTenantId(UUID id)  { CURRENT.set(id); }</text>
+  <text x="606" y="408" font-size="9" fill="#94a3b8">getTenantId()         { return CURRENT.get(); }</text>
+  <text x="606" y="424" font-size="9" fill="#ef4444">clear()               { CURRENT.remove(); }  // critical</text>
+  <text x="793" y="450" text-anchor="middle" font-size="9" fill="#64748b">each request thread holds its own isolated copy</text>
+
+  <!-- Piece 4 — AOP Aspect -->
+  <rect x="596" y="476" width="394" height="144" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <rect x="596" y="476" width="394" height="26" rx="8" fill="#1a1520"/>
+  <text x="793" y="494" text-anchor="middle" font-size="11" font-weight="700" fill="#c4b5fd">Piece 4 — TenantFilterAspect  (AOP)</text>
+  <text x="606" y="516" font-size="9" fill="#94a3b8">@Aspect @Component</text>
+  <text x="606" y="530" font-size="9" fill="#c4b5fd">@Before("execution(* com.rke.backend..repository..*(..))")</text>
+  <text x="606" y="544" font-size="9" fill="#94a3b8">public void enableTenantFilter() {</text>
+  <text x="618" y="558" font-size="9" fill="#94a3b8">UUID tenantId = TenantContext.getTenantId();</text>
+  <text x="618" y="572" font-size="9" fill="#fbbf24">if (tenantId == null) return;  // super admin</text>
+  <text x="618" y="586" font-size="9" fill="#94a3b8">session.enableFilter("tenantFilter")</text>
+  <text x="630" y="600" font-size="9" fill="#a78bfa">       .setParameter("tenantId", tenantId);</text>
+  <text x="606" y="614" font-size="9" fill="#94a3b8">}</text>
+
+  <!-- ThreadLocal vs parameter comparison -->
+  <rect x="596" y="634" width="394" height="104" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="793" y="656" text-anchor="middle" font-size="11" font-weight="600" fill="#e2e8f0">ThreadLocal vs passing as parameter</text>
+
+  <rect x="606" y="662" width="184" height="66" rx="4" fill="#450a0a" stroke="#7f1d1d" stroke-width="1"/>
+  <text x="698" y="678" text-anchor="middle" font-size="9" font-weight="600" fill="#fca5a5">WITHOUT ThreadLocal</text>
+  <text x="698" y="693" text-anchor="middle" font-size="9" fill="#94a3b8">search(name, tenantId)</text>
+  <text x="698" y="707" text-anchor="middle" font-size="9" fill="#94a3b8">get(id, tenantId)</text>
+  <text x="698" y="721" text-anchor="middle" font-size="9" fill="#ef4444">60+ places to thread it</text>
+
+  <rect x="800" y="662" width="182" height="66" rx="4" fill="#0f1f17" stroke="#065f46" stroke-width="1"/>
+  <text x="891" y="678" text-anchor="middle" font-size="9" font-weight="600" fill="#6ee7b7">WITH ThreadLocal</text>
+  <text x="891" y="693" text-anchor="middle" font-size="9" fill="#94a3b8">search(name)</text>
+  <text x="891" y="707" text-anchor="middle" font-size="9" fill="#94a3b8">get(id)</text>
+  <text x="891" y="721" text-anchor="middle" font-size="9" fill="#34d399">filter applied automatically</text>
+
+  <!-- ═══════════════════════════════════════
+       BOTTOM STRIP — key rule
+  ═══════════════════════════════════════ -->
+  <rect x="50" y="752" width="940" height="50" rx="8" fill="#1a1a1f" stroke="#334155" stroke-width="1.2"/>
+  <text x="510" y="772" text-anchor="middle" font-size="11" font-weight="700" fill="#e2e8f0">The golden rule</text>
+  <text x="510" y="790" text-anchor="middle" font-size="10" fill="#64748b">@FilterDef (define)  →  @Filter on entity (opt in)  →  TenantContext (carry)  →  TenantFilterAspect (activate)  →  Hibernate (enforce)  →  clear()</text>
+
+  <!-- ═══════════════════════════════════════
+       LAYER LABELS
+  ═══════════════════════════════════════ -->
+  <text x="34" y="106"  text-anchor="middle" font-size="9" fill="#475569" transform="rotate(-90,34,106)">AUTH</text>
+  <text x="34" y="194"  text-anchor="middle" font-size="9" fill="#34d399" transform="rotate(-90,34,194)">FILTER</text>
+  <text x="34" y="280"  text-anchor="middle" font-size="9" fill="#60a5fa" transform="rotate(-90,34,280)">THREAD</text>
+  <text x="34" y="358"  text-anchor="middle" font-size="9" fill="#94a3b8" transform="rotate(-90,34,358)">APP</text>
+  <text x="34" y="438"  text-anchor="middle" font-size="9" fill="#a78bfa" transform="rotate(-90,34,438)">AOP</text>
+  <text x="34" y="526"  text-anchor="middle" font-size="9" fill="#fb923c" transform="rotate(-90,34,526)">ORM</text>
+  <text x="34" y="614"  text-anchor="middle" font-size="9" fill="#38bdf8" transform="rotate(-90,34,614)">DB</text>
+  <text x="34" y="702"  text-anchor="middle" font-size="9" fill="#fbbf24" transform="rotate(-90,34,702)">ADMIN</text>
+
+</svg>
