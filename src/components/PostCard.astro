@@ -5,13 +5,17 @@ interface Props {
   description: string;
   date: Date;
   tags?: string[];
+  index?: number;
 }
-const { href, title, description, date, tags = [] } = Astro.props;
+const { href, title, description, date, tags = [], index } = Astro.props;
 const formatted = date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 ---
 
 <a class="post-card" href={href}>
-  <span class="post-card__date meta">{formatted}</span>
+  <span class="post-card__date meta">
+    {index !== undefined && <span class="post-card__num">{index}.</span>}
+    {formatted}
+  </span>
   <span class="post-card__title">{title}</span>
   <p class="post-card__desc">{description}</p>
   {tags.length > 0 && (
@@ -33,6 +37,12 @@ const formatted = date.toLocaleDateString('en-US', { month: 'short', day: '2-dig
   .post-card__date {
     display: block;
     margin-bottom: 6px;
+  }
+  .post-card__num {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--amber);
+    margin-right: 6px;
   }
   .post-card__title {
     display: block;
