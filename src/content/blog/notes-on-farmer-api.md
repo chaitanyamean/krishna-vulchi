@@ -61,17 +61,36 @@ CREATE INDEX idx_notes_on_farmer_farmer_id ON notes_on_farmer(farmer_id);
 
 **File:** `domain/NoteOnFarmer.java`
 
-Maps the SQL table to a Java class.
+Maps the SQL table to a Java class. One field per column. No logic.
 
-- Extends `TenantScopedEntity` — gives you `id`, `tenantId`, `createdAt`, `updatedAt` for free
-- `@Filter(name = TenantFilters.NAME)` — applies tenant isolation automatically
-- Lombok annotations (`@Data`, `@SuperBuilder` etc.) — no manual getters/setters/constructors
-- Fields are `private`, named in camelCase (`farmerId`, `userId`)
+```java
+@Entity
+@Table(name = "notes_on_farmer")
+@Filter(name = TenantFilters.NAME)       // applies tenant isolation automatically
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class NoteOnFarmer extends TenantScopedEntity {  // gives id, tenantId, createdAt, updatedAt for free
+
+    @Column(name = "farmer_id", nullable = false)
+    private UUID farmerId;
+
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
+
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    private String content;
+}
+```
 
 **What we learned here:**
 - `id`, `tenantId`, `createdAt`, `updatedAt` come from base classes — never declare them again
 - Every tenant-owned entity needs `@Filter` otherwise users can see other tenants' data
 - Java field naming is camelCase, `@Column(name=...)` handles the snake_case mapping to DB
+- `columnDefinition = "TEXT"` maps to PostgreSQL TEXT type for long content
 
 ---
 
@@ -79,16 +98,25 @@ Maps the SQL table to a Java class.
 
 **File:** `dto/NotesOnFarmerRequest.java`
 
-What the client sends in the request body.
+What the client sends in the request body. Not the entity.
 
-- `record` not `class` — immutable, concise, matches project style
-- Only two fields: `farmerId` and `content`
-- `userId` and `tenantId` are NOT here — they come from the logged-in session, never trusted from the client
-- `@NotNull` on `farmerId` (UUID cannot be blank)
-- `@NotBlank` on `content` (String must not be empty)
+```java
+public record NotesOnFarmerRequest(
+
+    @NotNull(message = "Farmer ID is mandatory")
+    UUID farmerId,
+
+    @NotBlank(message = "content is mandatory")
+    String content
+
+) {}
+```
 
 **What we learned here:**
-- DTO ≠ Entity. The entity has fields the client should never touch
+- DTO ≠ Entity. The entity has `tenantId`, `userId`, `createdAt` — the client should never set those
+- `record` not `class` — immutable, concise, matches project style
+- `@NotNull` on UUID fields (UUID cannot use `@NotBlank`)
+- `@NotBlank` on String fields (rejects null and empty strings)
 - Validation annotations on DTO = automatic 400 response when client sends bad data
 
 ---
@@ -97,10 +125,22 @@ What the client sends in the request body.
 
 **File:** `repository/NotesOnFarmerRepository.java`
 
-Database access layer. Just an interface.
+Database access layer. Just an interface — no implementation needed.
 
-- Extends `JpaRepository<NoteOnFarmer, UUID>` — gives `save()`, `findById()`, `existsById()` for free
-- One custom method: `findByFarmerIdOrderByCreatedAtDesc(UUID farmerId)` — Spring reads the method name and generates the SQL automatically
+```java
+public interface NotesOnFarmerRepository extends JpaRepository<NoteOnFarmer, UUID> {
+
+    // Spring reads the method name and generates the SQL automatically
+    // Generated SQL: SELECT * FROM notes_on_farmer WHERE farmer_id = ? ORDER BY created_at DESC
+    List<NoteOnFarmer> findByFarmerIdOrderByCreatedAtDesc(UUID farmerId);
+}
+```
+
+Free methods from `JpaRepository`:
+- `save(entity)` — insert or update
+- `findById(id)` — returns `Optional<NoteOnFarmer>`
+- `existsById(id)` — returns boolean
+- `deleteById(id)` — deletes by id
 
 **What we learned here:**
 - No business logic in the repository — only DB queries
@@ -115,18 +155,57 @@ Database access layer. Just an interface.
 
 The brain. All business logic lives here.
 
-- `create()` — validates farmer exists first, then builds and saves the note
-- `listByFarmer()` — fetches all notes for a farmer ordered by newest first
-- `tenantId` comes from `currentUserService.getTenantId()` — never from the client
-- `userId` comes from `currentUserService.getCurrentUserId()` — never from the client
-- `@Transactional` on writes, `@Transactional(readOnly = true)` on reads
-- `requireFarmer()` throws `IllegalArgumentException` if farmer does not exist
+```java
+@Service
+public class NotesOnFarmerService {
+
+    private final NotesOnFarmerRepository repository;
+    private final FarmerRepository farmerRepository;
+    private final CurrentUserService currentUserService;
+
+    // Constructor injection — not @Autowired on fields
+    public NotesOnFarmerService(NotesOnFarmerRepository repository,
+                                 FarmerRepository farmerRepository,
+                                 CurrentUserService currentUserService) {
+        this.repository = repository;
+        this.farmerRepository = farmerRepository;
+        this.currentUserService = currentUserService;
+    }
+
+    @Transactional
+    public NoteOnFarmer create(NotesOnFarmerRequest request) {
+        requireFarmer(request.farmerId());  // validate farmer exists first
+
+        NoteOnFarmer note = NoteOnFarmer.builder()
+                .tenantId(currentUserService.getTenantId())       // from session, never from client
+                .userId(currentUserService.getCurrentUserId())    // from session, never from client
+                .farmerId(request.farmerId())
+                .content(request.content().trim())
+                .build();
+
+        return repository.save(note);
+    }
+
+    @Transactional(readOnly = true)
+    public List<NoteOnFarmer> listByFarmer(UUID farmerId) {
+        return repository.findByFarmerIdOrderByCreatedAtDesc(farmerId);
+    }
+
+    private void requireFarmer(UUID farmerId) {
+        if (!farmerRepository.existsById(farmerId)) {
+            throw new IllegalArgumentException("Farmer Not Found: " + farmerId);
+        }
+    }
+}
+```
 
 **What we learned here:**
 - Service is where you ask "what can go wrong?" and handle it
+- `tenantId` and `userId` always come from `currentUserService` — never trust the client
 - `@Transactional` ensures DB rolls back if anything fails mid-way
-- `readOnly = true` is a performance hint to the DB for read operations
-- Constructor injection — not `@Autowired` on fields
+- `@Transactional(readOnly = true)` is a performance hint for reads — use it always on read methods
+- Validate everything before writing — `requireFarmer()` runs before `repository.save()`
+- Constructor injection over `@Autowired` on fields
 
 ---
 
@@ -134,34 +213,39 @@ The brain. All business logic lives here.
 
 **File:** `controller/NotesOnFarmerController.java`
 
-HTTP entry point. Thin — just routing and calling the service.
+HTTP entry point. Thin — just routing and calling the service. No business logic.
 
-- `GET /api/notes-on-farmer?farmerId=<uuid>` — list notes for a farmer
-- `POST /api/notes-on-farmer` — create a note
-- `@Valid` on request body — triggers DTO validation
-- `@RequestParam` for query params, `@RequestBody` for request body
-- No business logic — only delegates to service
+```java
+@RestController
+@RequestMapping("/api/notes-on-farmer")
+public class NotesOnFarmerController {
+
+    private final NotesOnFarmerService service;
+
+    public NotesOnFarmerController(NotesOnFarmerService service) {
+        this.service = service;
+    }
+
+    // GET /api/notes-on-farmer?farmerId=<uuid>
+    @GetMapping
+    public List<NoteOnFarmer> list(@RequestParam UUID farmerId) {
+        return service.listByFarmer(farmerId);
+    }
+
+    // POST /api/notes-on-farmer
+    @PostMapping
+    public NoteOnFarmer create(@Valid @RequestBody NotesOnFarmerRequest request) {
+        return service.create(request);
+    }
+}
+```
 
 **What we learned here:**
 - Controller has zero `if` statements — that belongs in the service
+- `@Valid` on `@RequestBody` triggers DTO validation — missing or invalid fields return 400 automatically
 - `@GetMapping` with no path = query param style (`?farmerId=...`)
-- `@GetMapping("/{id}")` with `@PathVariable` = path style (`/123`)
-
----
-
-## How auth works in this project
-
-No Bearer token. Session-based auth via `JSESSIONID` cookie. Login once via `POST /api/auth/login`, the cookie is set automatically. Every subsequent request carries it.
-
----
-
-## How to run after changes
-
-```bash
-docker compose down && docker compose up --build -d
-```
-
-`--build` is required to rebuild the image with new code.
+- `@GetMapping("/{id}")` with `@PathVariable` = path style (`/api/notes-on-farmer/123`)
+- `@RequestParam` reads from query string, `@RequestBody` reads from request body
 
 ---
 
