@@ -18,13 +18,14 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
     </p>
     {posts.length > 0 ? (
       <div>
-        {posts.map((post) => (
+        {posts.map((post, i) => (
           <PostCard
             href={`/blog/${post.slug}`}
             title={post.data.title}
             description={post.data.description}
             date={post.data.date}
             tags={post.data.tags}
+            index={i + 1}
           />
         ))}
       </div>
