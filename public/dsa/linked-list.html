@@ -206,6 +206,7 @@
     <a href="#how-to-use">How to use</a>
     <a href="#cheatsheet">Pattern cheat sheet</a>
     <a href="#dummy-node">Dummy Node</a>
+    <a href="#fast-slow">Fast &amp; Slow Pointers</a>
   </div>
 </nav>
 
@@ -590,6 +591,233 @@ return dummy.next;   // new head (may differ from original)</code></pre>
 // curr=4, next=4 → dup run → fast-forward to last 4 → prev.next=5, curr→5
 // curr=5 unique → prev→5, curr→null
 // Result: 1→2→5</code></pre>
+      </details>
+    </div>
+  </div>
+
+</section>
+
+<hr class="sep">
+
+<section id="fast-slow">
+  <h2><span class="tag">Pattern</span>Fast &amp; Slow Pointers</h2>
+  <p class="lede">
+    Two pointers move through the list at different speeds — <code>slow</code> advances one step at a time, <code>fast</code> advances two. When <code>fast</code> reaches the end, <code>slow</code> is at the midpoint. If a cycle exists, the two pointers will eventually collide inside it.
+  </p>
+
+  <div class="callout drill">
+    <b>Muscle-memory template — Fast &amp; Slow</b>
+  </div>
+<pre><code>ListNode slow = head;
+ListNode fast = head;
+
+while (fast != null && fast.next != null) {
+    slow = slow.next;        // 1 step
+    fast = fast.next.next;   // 2 steps
+}
+// When loop ends: slow is at the middle (or inside a cycle)</code></pre>
+
+  <div class="callout">
+    <b>Why <code>fast != null && fast.next != null</code>?</b>
+    <code>fast.next.next</code> dereferences two levels. We must guard both: <code>fast != null</code> before accessing <code>fast.next</code>, and <code>fast.next != null</code> before accessing <code>fast.next.next</code>.
+  </div>
+
+  <h3>Must-know questions</h3>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>7. Middle of the Linked List</h4>
+      <div class="pbadges">
+        <span class="badge easy">Easy</span>
+        <span class="badge freq">Foundational</span>
+        <a class="lc-link" href="https://leetcode.com/problems/middle-of-the-linked-list/" target="_blank" rel="noopener" title="Open on LeetCode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="pbody">
+      <p>Return the middle node of a linked list. For even-length lists, return the second middle node.</p>
+      <p class="clue"><b>Why it works:</b> fast moves twice as fast as slow. When fast hits the end, slow is exactly halfway through. For even-length lists (<code>fast == null</code> exits), slow lands on the second of the two middle nodes — which is what LeetCode expects.</p>
+      <p class="clue"><b>Odd (5 nodes):</b> fast reaches the last node (<code>fast.next == null</code>), slow is at node 3. ✓<br>
+         <b>Even (6 nodes):</b> fast reaches null (<code>fast == null</code>), slow is at node 4 (second middle). ✓</p>
+      <details>
+        <summary>Java solution</summary>
+<pre><code>class Solution {
+    public ListNode middleNode(ListNode head) {
+
+        ListNode slow = head;
+        ListNode fast = head;
+
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+
+        return slow;
+    }
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>8. Linked List Cycle</h4>
+      <div class="pbadges">
+        <span class="badge easy">Easy</span>
+        <span class="badge freq">Very common</span>
+        <a class="lc-link" href="https://leetcode.com/problems/linked-list-cycle/" target="_blank" rel="noopener" title="Open on LeetCode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="pbody">
+      <p>Return <code>true</code> if the linked list has a cycle.</p>
+      <p class="clue"><b>Why it works (Floyd's algorithm):</b> if a cycle exists, fast will eventually lap slow inside the cycle and they will point to the same node. If there's no cycle, fast reaches <code>null</code> first.</p>
+      <p class="clue"><b>Key detail:</b> check <code>slow == fast</code> <em>after</em> moving both pointers — otherwise the initial position (both at head) triggers a false positive.</p>
+      <details>
+        <summary>Java solution</summary>
+<pre><code>class Solution {
+    public boolean hasCycle(ListNode head) {
+
+        ListNode slow = head;
+        ListNode fast = head;
+
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+
+            if (slow == fast) {   // same node reference, not just same value
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>9. Linked List Cycle II — Find the Start</h4>
+      <div class="pbadges">
+        <span class="badge medium">Medium</span>
+        <span class="badge freq">Common</span>
+        <a class="lc-link" href="https://leetcode.com/problems/linked-list-cycle-ii/" target="_blank" rel="noopener" title="Open on LeetCode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="pbody">
+      <p>Return the node where the cycle begins, or <code>null</code> if there is no cycle.</p>
+      <p class="clue"><b>Two-phase approach:</b></p>
+      <p class="clue">
+        <b>Phase 1 — find meeting point:</b> run fast &amp; slow as usual until they collide inside the cycle.<br>
+        <b>Phase 2 — find cycle start:</b> reset <code>slow</code> to <code>head</code>, keep <code>fast</code> at the meeting point, then advance both one step at a time. The node where they meet again is the cycle entry.
+      </p>
+      <p class="clue"><b>Why phase 2 works (the math):</b> let <code>F</code> = distance from head to cycle start, <code>C</code> = cycle length. At the meeting point, slow has travelled <code>F + a</code> steps and fast has travelled <code>F + a + nC</code> steps (n full laps more). Since fast = 2 × slow: <code>F + a + nC = 2(F + a)</code> → <code>F = nC − a</code>. So walking <code>F</code> steps from head and <code>F</code> steps from the meeting point both land at the cycle start.</p>
+      <details>
+        <summary>Java solution</summary>
+<pre><code>class Solution {
+    public ListNode detectCycle(ListNode head) {
+
+        ListNode slow = head;
+        ListNode fast = head;
+
+        // Phase 1: Find meeting point inside the cycle
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+
+            if (slow == fast) {
+                // Phase 2: Reset slow to head, move both 1 step at a time
+                slow = head;
+                while (slow != fast) {
+                    slow = slow.next;
+                    fast = fast.next;
+                }
+                return slow;   // cycle start node
+            }
+        }
+
+        return null;   // no cycle
+    }
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>10. Remove Nth Node From End of List</h4>
+      <div class="pbadges">
+        <span class="badge medium">Medium</span>
+        <span class="badge freq">Very common</span>
+        <a class="lc-link" href="https://leetcode.com/problems/remove-nth-node-from-end-of-list/" target="_blank" rel="noopener" title="Open on LeetCode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="pbody">
+      <p>Remove the n-th node from the end of the list and return its head.</p>
+      <p class="clue"><b>Combines dummy node + gap technique:</b> both pointers start at <code>dummy</code>. Advance <code>secondPointer</code> by <code>n</code> steps to open a gap of exactly <code>n</code>. Then walk both until <code>secondPointer.next == null</code> — at that point <code>firstPointer</code> is sitting just before the target node.</p>
+      <p class="clue"><b>Why start both at dummy?</b> If the target is the head (n == list length), <code>firstPointer</code> needs to stay at dummy so <code>firstPointer.next = firstPointer.next.next</code> correctly removes the head.</p>
+      <details>
+        <summary>Java solution</summary>
+<pre><code>class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+
+        ListNode dummy = new ListNode(0, head);
+        ListNode firstPointer  = dummy;
+        ListNode secondPointer = dummy;
+
+        // Open a gap of n between the two pointers
+        for (int i = 0; i &lt; n; i++) {
+            secondPointer = secondPointer.next;
+        }
+
+        // Walk both until secondPointer reaches the last node
+        while (secondPointer.next != null) {
+            secondPointer = secondPointer.next;
+            firstPointer  = firstPointer.next;
+        }
+
+        // firstPointer is just before the node to remove
+        firstPointer.next = firstPointer.next.next;
+
+        return dummy.next;
+    }
+}
+// Time: O(n)  Space: O(1)
+
+// Example: 1→2→3→4→5, n=2  (remove 4th node = value 4)
+// After gap: secondPointer at node 2, firstPointer at dummy
+// Walk: secondPointer→3, firstPointer→1
+//       secondPointer→4, firstPointer→2
+//       secondPointer→5, firstPointer→3  (secondPointer.next=null, stop)
+// firstPointer.next = firstPointer.next.next → 3.next = 5
+// Result: 1→2→3→5</code></pre>
       </details>
     </div>
   </div>
