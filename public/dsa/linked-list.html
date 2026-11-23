@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base target="_top">
+<title>Linked List — Dummy Node Pattern &amp; More</title>
+<style>
+  :root{
+    --bg:#0d0f14;
+    --surface:#151822;
+    --surface2:#1b1f2a;
+    --text:#e5e7ee;
+    --muted:#949cad;
+    --border:#2a2f3b;
+    --accent:#818cf8;
+    --accent-soft:#1e1b4b;
+    --accent2:#2dd4bf;
+    --accent2-soft:#0a2f2c;
+    --warn:#f87171;
+    --warn-soft:#450a0a;
+    --code-bg:#161a24;
+    --code-text:#e6e9ef;
+    --code-key:#7dd3fc;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  html{color-scheme:dark;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55;
+  }
+  a{color:var(--accent);}
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px 80px;}
+
+  header{
+    background:linear-gradient(135deg,#1e1b4b,#4338ca 55%,#0f766e);
+    color:#fff;
+    padding:36px 20px 28px;
+  }
+  header .inner{max-width:900px;margin:0 auto;}
+  header h1{margin:0 0 6px;font-size:1.6rem;}
+  header p.sub{margin:0 0 18px;color:#dbe0ff;font-size:.98rem;}
+
+  nav.toc{
+    position:sticky;top:0;z-index:10;
+    background:rgba(13,15,20,.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);
+    overflow-x:auto;
+    white-space:nowrap;
+    padding:10px 20px;
+  }
+  nav.toc .inner{max-width:900px;margin:0 auto;display:flex;gap:8px;}
+  nav.toc a{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:999px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--text);
+    text-decoration:none;
+    font-size:.85rem;
+    font-weight:600;
+  }
+  nav.toc a:hover{border-color:var(--accent);color:var(--accent);}
+
+  section{padding-top:44px;scroll-margin-top:56px;}
+  h2{font-size:1.35rem;margin:0 0 6px;}
+  h2 .tag{
+    display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
+    padding:2px 8px;border-radius:6px;vertical-align:middle;margin-right:8px;
+  }
+  h3{font-size:1.05rem;margin:26px 0 8px;}
+  p{margin:8px 0;}
+  .lede{color:var(--muted);font-size:.98rem;}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    margin:14px 0;
+  }
+  .callout{
+    border-left:4px solid var(--accent);
+    background:var(--accent-soft);
+    border-radius:8px;
+    padding:12px 16px;
+    margin:14px 0;
+    font-size:.93rem;
+  }
+  .callout.drill{border-left-color:var(--accent2);background:var(--accent2-soft);}
+  .callout b{display:block;margin-bottom:2px;}
+
+  pre{
+    background:var(--code-bg);
+    color:var(--code-text);
+    padding:14px 16px;
+    border-radius:10px;
+    overflow-x:auto;
+    font-size:.83rem;
+    line-height:1.5;
+    margin:10px 0;
+  }
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  p code, li code, td code{
+    background:var(--surface2);color:var(--text);padding:1px 6px;border-radius:5px;font-size:.85em;
+  }
+  details{margin:10px 0;}
+  details summary{
+    cursor:pointer;font-weight:600;color:var(--accent);
+    padding:8px 0;list-style:none;
+  }
+  details summary::-webkit-details-marker{display:none;}
+  details summary::before{content:"▸ ";}
+  details[open] summary::before{content:"▾ ";}
+  details p{margin:4px 0 0;font-size:.85rem;color:var(--muted);}
+
+  .problem{border:1px solid var(--border);border-radius:var(--radius);margin:14px 0;overflow:hidden;}
+  .problem .phead{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border);
+    flex-wrap:wrap;
+  }
+  .problem .phead h4{margin:0;font-size:.98rem;}
+  .pbadges{display:flex;gap:6px;flex-wrap:wrap;}
+  .badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;display:inline-block;}
+  .badge.easy{background:#14532d;color:#86efac;}
+  .badge.medium{background:#78350f;color:#fcd34d;}
+  .badge.hard{background:#7f1d1d;color:#fca5a5;}
+  .badge.freq{background:#312e81;color:#c7d2fe;}
+  .pbody{padding:14px 16px;}
+  .clue{font-size:.85rem;color:var(--muted);margin:6px 0;}
+  .clue b{color:var(--text);}
+  .lc-link{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:6px;
+    color:var(--accent);border:1px solid var(--border);
+    background:var(--surface);text-decoration:none;flex-shrink:0;
+  }
+  .lc-link:hover{border-color:var(--accent);background:var(--accent-soft);}
+  .lc-link svg{width:14px;height:14px;}
+
+  /* node visualizer */
+  .ll-row{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:16px 0 8px;}
+  .ll-node{
+    display:flex;align-items:stretch;
+    border:2px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+    font-size:.88rem;
+    font-weight:700;
+    min-width:52px;
+  }
+  .ll-node.dummy{border-color:var(--accent2);}
+  .ll-node.dummy .ll-val{background:var(--accent2-soft);color:var(--accent2);}
+  .ll-node.target{border-color:var(--warn);}
+  .ll-node.target .ll-val{background:var(--warn-soft);color:var(--warn);}
+  .ll-node.curr{border-color:var(--accent);}
+  .ll-node.curr .ll-val{background:var(--accent-soft);color:var(--accent);}
+  .ll-val{padding:10px 12px;background:var(--surface);}
+  .ll-ptr{padding:10px 8px;background:var(--surface2);font-size:.7rem;color:var(--muted);display:flex;align-items:center;}
+  .ll-arrow{font-size:1.2rem;color:var(--muted);padding:0 6px;align-self:center;}
+  .ll-null{align-self:center;font-size:.8rem;color:var(--muted);padding:0 8px;font-style:italic;}
+  .ll-label{
+    font-size:.7rem;font-weight:700;color:var(--accent2);
+    text-align:center;margin-top:4px;
+  }
+  .ll-node-wrap{display:flex;flex-direction:column;align-items:center;}
+  .demo-status{
+    text-align:center;margin:12px 0;font-size:.92rem;background:var(--surface2);
+    border:1px dashed var(--border);border-radius:8px;padding:10px;
+  }
+  .demo-controls{display:flex;gap:10px;justify-content:center;margin:14px 0;flex-wrap:wrap;}
+  button.step-btn{
+    background:var(--accent);color:#111324;border:none;padding:9px 16px;border-radius:8px;
+    font-weight:700;font-size:.85rem;cursor:pointer;
+  }
+  button.step-btn.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent);}
+  button.step-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:.85rem;}
+  th,td{border:1px solid var(--border);padding:6px 8px;text-align:left;vertical-align:top;}
+  th{background:var(--surface2);}
+
+  hr.sep{border:none;border-top:1px solid var(--border);margin:40px 0;}
+  footer{color:var(--muted);font-size:.8rem;text-align:center;padding:30px 20px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <h1>Linked List Patterns</h1>
+    <p class="sub">Dummy node, fast &amp; slow pointers, in-place reversal — muscle-memory templates with interactive walkthroughs.</p>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="inner">
+    <a href="#how-to-use">How to use</a>
+    <a href="#cheatsheet">Pattern cheat sheet</a>
+    <a href="#dummy-node">Dummy Node</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<section id="how-to-use">
+  <h2>How to use this guide</h2>
+  <p class="lede">For each pattern: read the plain-English idea → step through the interactive walkthrough → look away and write the template from memory → check yourself → then do the problems.</p>
+  <div class="callout">
+    <b>Key insight for linked lists:</b>
+    Unlike arrays, you can't index into a linked list. All manipulation happens by rewiring <code>next</code> pointers. The patterns here are really just disciplined ways of doing that without losing nodes or creating cycles.
+  </div>
+</section>
+
+<section id="cheatsheet">
+  <h2><span class="tag">Reference</span>Pattern-recognition cheat sheet</h2>
+  <table>
+    <tr><th>If the problem says…</th><th>Think</th></tr>
+    <tr><td>remove / insert at a position that might be the head</td><td>Dummy Node — avoids special-casing head</td></tr>
+    <tr><td>detect a cycle, find the middle, find the k-th from end</td><td>Fast &amp; Slow Pointers</td></tr>
+    <tr><td>reverse the whole list or a sub-range in-place</td><td>In-Place Reversal (prev / curr / next)</td></tr>
+    <tr><td>merge two sorted lists, add two numbers as lists</td><td>Dummy Node + two-pointer traversal</td></tr>
+  </table>
+</section>
+
+<hr class="sep">
+
+<section id="dummy-node">
+  <h2><span class="tag">Pattern</span>Dummy Node</h2>
+  <p class="lede">
+    Create a throwaway node before the real head. Point its <code>next</code> to <code>head</code>. 
+    Now every node — including the original head — has a predecessor, so you never need 
+    an <code>if (head == null)</code> special case. At the end, return <code>dummy.next</code>.
+  </p>
+
+  <div class="callout drill">
+    <b>Muscle-memory template — Dummy Node</b>
+  </div>
+<pre><code>ListNode dummy = new ListNode(0, head);   // dummy.next = head
+ListNode curr = dummy;
+
+while (curr != null && curr.next != null) {
+    if (/* curr.next should be removed */ false) {
+        curr.next = curr.next.next;         // skip the node
+    } else {
+        curr = curr.next;                   // move forward
+    }
+}
+
+return dummy.next;   // new head (may differ from original)</code></pre>
+
+  <div class="callout">
+    <b>Why not just move curr forward every time?</b>
+    When you delete <code>curr.next</code>, you must stay at <code>curr</code> — the new <code>curr.next</code> might also need deleting. Only advance when the current node is definitely a keeper.
+  </div>
+
+  <h3>Interactive walkthrough — Remove Elements (val = 6)</h3>
+  <p class="lede">List: <code>1 → 2 → 6 → 3 → 4 → 5 → 6</code>. Watch how <code>curr</code> moves and how nodes with value 6 are skipped.</p>
+
+  <div class="card">
+    <div id="ll-viz" style="overflow-x:auto;padding-bottom:8px;"></div>
+    <div class="demo-status" id="ll-status">Click "Next step" to begin.</div>
+    <div class="demo-controls">
+      <button class="step-btn secondary" id="ll-reset">Reset</button>
+      <button class="step-btn" id="ll-next">Next step →</button>
+    </div>
+  </div>
+
+  <h3>Must-know questions</h3>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>1. Remove Linked List Elements</h4>
+      <div class="pbadges">
+        <span class="badge easy">Easy</span>
+        <span class="badge freq">Foundational</span>
+        <a class="lc-link" href="https://leetcode.com/problems/remove-linked-list-elements/" target="_blank" rel="noopener" title="Open on LeetCode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="pbody">
+      <p>Remove all nodes from the linked list that have value equal to <code>val</code>.</p>
+      <p class="clue"><b>Why dummy node?</b> The head itself might equal <code>val</code>. Without a dummy you'd need a separate loop to skip leading matches. With a dummy, the loop handles everything uniformly.</p>
+      <p class="clue"><b>Key detail:</b> when <code>curr.next.val == val</code>, skip the node but <b>don't advance curr</b> — the new <code>curr.next</code> might also equal <code>val</code>.</p>
+      <details>
+        <summary>Java solution</summary>
+<pre><code>class Solution {
+    public ListNode removeElements(ListNode head, int val) {
+
+        ListNode dummy = new ListNode(0, head);
+        ListNode curr = dummy;
+
+        while (curr != null && curr.next != null) {
+            if (curr.next.val == val) {
+                curr.next = curr.next.next;   // skip the target node
+            } else {
+                curr = curr.next;             // safe to advance
+            }
+        }
+
+        return dummy.next;
+    }
+}
+// Time: O(n)  Space: O(1)</code></pre>
+        <p>Trace on [1,2,6,3,4,5,6], val=6:</p>
+        <p>dummy→1→2→6→3→4→5→6<br>
+        curr=dummy: next=1 (keep) → curr=1<br>
+        curr=1: next=2 (keep) → curr=2<br>
+        curr=2: next=6 (remove) → 2.next=3, stay at curr=2<br>
+        curr=2: next=3 (keep) → curr=3<br>
+        curr=3: next=4 (keep) → curr=4<br>
+        curr=4: next=5 (keep) → curr=5<br>
+        curr=5: next=6 (remove) → 5.next=null, stay at curr=5<br>
+        curr=5: next=null → loop ends<br>
+        return dummy.next → 1→2→3→4→5</p>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>2. Delete Nodes From Linked List Present in Array</h4>
+      <div class="pbadges">
+        <span class="badge easy">Easy</span>
+        <span class="badge freq">Common</span>
+        <a class="lc-link" href="https://leetcode.com/problems/delete-nodes-from-linked-list-present-in-array/" target="_blank" rel="noopener" title="Open on LeetCode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="pbody">
+      <p>Given an array <code>nums</code> and a linked list, remove all nodes whose value exists in <code>nums</code>.</p>
+      <p class="clue"><b>Upgrade from problem 1:</b> load <code>nums</code> into a <code>HashSet</code> first so each lookup is O(1) rather than O(n). The dummy node + stay-on-match logic is identical.</p>
+      <details>
+        <summary>Java solution</summary>
+<pre><code>class Solution {
+    public ListNode modifiedList(int[] nums, ListNode head) {
+
+        ListNode dummy = new ListNode(0, head);
+        ListNode curr = dummy;
+
+        Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+        for (int val : nums) {
+            set.add(val);
+        }
+
+        while (curr != null && curr.next != null) {
+            if (set.contains(curr.next.val)) {
+                curr.next = curr.next.next;   // skip — might need to skip again
+            } else {
+                curr = curr.next;             // safe to advance
+            }
+        }
+
+        return dummy.next;
+    }
+}
+// Time: O(n + m)  Space: O(m)  — n = list length, m = nums length</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>3. Merge Two Sorted Lists</h4>
+      <div class="pbadges">
+        <span class="badge easy">Easy</span>
+        <span class="badge freq">Very common</span>
+        <a class="lc-link" href="https://leetcode.com/problems/merge-two-sorted-lists/" target="_blank" rel="noopener" title="Open on LeetCode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="pbody">
+      <p>Merge two sorted linked lists and return the merged list in sorted order.</p>
+      <p class="clue"><b>Why dummy node?</b> You don't know which list contributes the first node. The dummy gives <code>curr</code> something to attach to from the very start — no special first-node logic needed.</p>
+      <p class="clue"><b>Key detail:</b> after the main loop one list may have remaining nodes — attach the leftover tail directly with <code>curr.next = list1 != null ? list1 : list2</code>.</p>
+      <details>
+        <summary>Java solution</summary>
+<pre><code>class Solution {
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+
+        ListNode dummy = new ListNode(0);
+        ListNode curr = dummy;
+
+        while (list1 != null && list2 != null) {
+            if (list1.val &lt; list2.val) {
+                curr.next = list1;
+                list1 = list1.next;
+            } else {
+                curr.next = list2;
+                list2 = list2.next;
+            }
+            curr = curr.next;
+        }
+
+        // Attach remaining tail (at most one list is non-null)
+        curr.next = (list1 != null) ? list1 : list2;
+
+        return dummy.next;
+    }
+}
+// Time: O(n + m)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>4. Swap Nodes in Pairs</h4>
+      <div class="pbadges">
+        <span class="badge medium">Medium</span>
+        <span class="badge freq">Common</span>
+        <a class="lc-link" href="https://leetcode.com/problems/swap-nodes-in-pairs/" target="_blank" rel="noopener" title="Open on LeetCode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="pbody">
+      <p>Swap every two adjacent nodes and return the head. You must swap the nodes themselves, not just their values.</p>
+      <p class="clue"><b>Why dummy node?</b> The first pair swap changes the head. The dummy acts as the stable predecessor so <code>curr.next = swap2</code> works identically for every pair including the first.</p>
+      <p class="clue"><b>Rewiring order — draw this out once:</b><br>
+        1. <code>swap1.next = swap2.next</code> — point swap1 past swap2<br>
+        2. <code>swap2.next = swap1</code> — swap2 now leads the pair<br>
+        3. <code>curr.next = swap2</code> — attach the pair to the chain<br>
+        4. <code>curr = swap1</code> — advance curr to the tail of the swapped pair
+      </p>
+      <details>
+        <summary>Java solution</summary>
+<pre><code>class Solution {
+    public ListNode swapPairs(ListNode head) {
+
+        ListNode dummy = new ListNode(0, head);
+        ListNode curr = dummy;
+
+        while (curr.next != null && curr.next.next != null) {
+
+            ListNode swap1 = curr.next;
+            ListNode swap2 = curr.next.next;
+
+            swap1.next = swap2.next;   // 1. detach swap2 from rest
+            swap2.next = swap1;        // 2. swap2 now points to swap1
+            curr.next  = swap2;        // 3. attach swapped pair
+            curr = swap1;              // 4. move past the pair
+        }
+
+        return dummy.next;
+    }
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>5. Swapping Nodes in a Linked List</h4>
+      <div class="pbadges">
+        <span class="badge medium">Medium</span>
+        <span class="badge freq">Common</span>
+        <a class="lc-link" href="https://leetcode.com/problems/swapping-nodes-in-a-linked-list/" target="_blank" rel="noopener" title="Open on LeetCode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="pbody">
+      <p>Swap the <em>values</em> of the k-th node from the beginning and the k-th node from the end.</p>
+      <p class="clue"><b>Pattern:</b> fast &amp; slow pointers — no dummy needed since we're swapping values, not rewiring nodes.</p>
+      <p class="clue"><b>Trick:</b> advance <code>fast</code> to the k-th node and save it as <code>first</code>. Then walk <code>fast</code> to the last node while <code>slow</code> walks from the head in parallel — when <code>fast.next == null</code>, <code>slow</code> is exactly at the k-th from the end.</p>
+      <details>
+        <summary>Java solution</summary>
+<pre><code>class Solution {
+    public ListNode swapNodes(ListNode head, int k) {
+
+        ListNode fast = head;
+        ListNode slow = head;
+
+        // Advance fast to the k-th node from the start
+        for (int i = 1; i &lt; k; i++) {
+            fast = fast.next;
+        }
+        ListNode first = fast;   // k-th from start
+
+        // Walk fast to the end; slow mirrors it from head
+        while (fast.next != null) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+        // slow is now the k-th node from the end
+
+        int temp = first.val;
+        first.val = slow.val;
+        slow.val = temp;
+
+        return head;
+    }
+}
+// Time: O(n)  Space: O(1)</code></pre>
+      </details>
+    </div>
+  </div>
+
+  <div class="problem">
+    <div class="phead">
+      <h4>6. Remove Duplicates from Sorted List II</h4>
+      <div class="pbadges">
+        <span class="badge medium">Medium</span>
+        <span class="badge freq">Common</span>
+        <a class="lc-link" href="https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/" target="_blank" rel="noopener" title="Open on LeetCode">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="pbody">
+      <p>Delete all nodes that have duplicate numbers — the duplicated value itself must also be removed, leaving only distinct numbers.</p>
+      <p class="clue"><b>Why dummy node?</b> The head itself might be a duplicate and need to be removed entirely.</p>
+      <p class="clue"><b>Two-pointer twist:</b> use <code>prev</code> (starts at dummy) and <code>curr</code> (starts at head). When <code>curr</code> starts a duplicate run, fast-forward <code>curr</code> to the last duplicate, then <code>prev.next = curr.next</code> skips the whole block. Only advance <code>prev</code> when the value is unique.</p>
+      <details>
+        <summary>Java solution</summary>
+<pre><code>class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+
+        ListNode dummy = new ListNode(0, head);
+        ListNode prev = dummy;
+        ListNode curr = head;
+
+        while (curr != null) {
+
+            // Detect start of a duplicate run
+            if (curr.next != null && curr.val == curr.next.val) {
+
+                // Fast-forward curr to the last node of this value
+                while (curr.next != null && curr.val == curr.next.val) {
+                    curr = curr.next;
+                }
+
+                // Bypass the entire duplicate block; keep prev in place
+                prev.next = curr.next;
+
+            } else {
+                // Unique value — safe to advance prev
+                prev = prev.next;
+            }
+
+            curr = curr.next;
+        }
+
+        return dummy.next;
+    }
+}
+// Time: O(n)  Space: O(1)
+
+// Trace: 1→2→3→3→4→4→5
+// curr=1 unique → prev→1, curr→2
+// curr=2 unique → prev→2, curr→3
+// curr=3, next=3 → dup run → fast-forward to last 3 → prev.next=4, curr→4
+// curr=4, next=4 → dup run → fast-forward to last 4 → prev.next=5, curr→5
+// curr=5 unique → prev→5, curr→null
+// Result: 1→2→5</code></pre>
+      </details>
+    </div>
+  </div>
+
+</section>
+
+</div><!-- end .wrap -->
+
+<footer>
+  <p>Part of the <a href="/dsa">DSA prep guides</a> — Krishna Chaitanya Vulchi</p>
+</footer>
+
+<script>
+// ─── Linked List Interactive Walkthrough ───────────────────────────────────
+(function () {
+  // Initial list: 1 → 2 → 6 → 3 → 4 → 5 → 6, val = 6
+  const VAL = 6;
+
+  // We simulate the list as an array of {id, val, alive}
+  // currIdx is the index into the FULL node array (0 = dummy)
+  const nodes = [
+    { id: 0, label: 'dummy', val: 0 },
+    { id: 1, label: null, val: 1 },
+    { id: 2, label: null, val: 2 },
+    { id: 3, label: null, val: 6 },
+    { id: 4, label: null, val: 3 },
+    { id: 5, label: null, val: 4 },
+    { id: 6, label: null, val: 5 },
+    { id: 7, label: null, val: 6 },
+  ];
+
+  // removed set: indices that have been removed from the chain
+  let removed = new Set();
+  // next[i] = index of next alive node after i (-1 = null)
+  let nextMap = {};
+  let currIdx = 0;
+  let done = false;
+
+  function buildNextMap() {
+    nextMap = {};
+    // Build the live chain
+    const alive = nodes.filter((_, i) => !removed.has(i));
+    for (let i = 0; i < alive.length - 1; i++) {
+      nextMap[alive[i].id] = alive[i + 1].id;
+    }
+    nextMap[alive[alive.length - 1].id] = -1;
+  }
+
+  function getNextAlive(id) {
+    return nextMap[id] !== undefined ? nextMap[id] : -1;
+  }
+
+  function reset() {
+    removed = new Set();
+    currIdx = 0;
+    done = false;
+    buildNextMap();
+    render('Click "Next step" to begin.');
+    document.getElementById('ll-next').disabled = false;
+  }
+
+  function step() {
+    if (done) return;
+
+    const nextId = getNextAlive(currIdx);
+
+    if (nextId === -1) {
+      // curr.next is null — loop ends
+      done = true;
+      render('Loop complete. <strong>Return dummy.next</strong> → result list highlighted.');
+      document.getElementById('ll-next').disabled = true;
+      return;
+    }
+
+    const nextNode = nodes[nextId];
+
+    if (nextNode.val === VAL) {
+      // Remove nextId from chain: skip it
+      const skipToId = getNextAlive(nextId);
+      removed.add(nextId);
+      buildNextMap();
+      render(`curr.next.val = <strong>${nextNode.val}</strong> == ${VAL} → <span style="color:var(--warn)">skip node ${nextNode.val}</span>, stay at curr`);
+    } else {
+      // Advance curr
+      currIdx = nextId;
+      render(`curr.next.val = <strong>${nextNode.val}</strong> ≠ ${VAL} → keep, advance curr to <strong>${nextNode.val}</strong>`);
+    }
+  }
+
+  function render(msg) {
+    const viz = document.getElementById('ll-viz');
+    const status = document.getElementById('ll-status');
+    status.innerHTML = msg;
+
+    // Build display: show all nodes in original order, grey out removed ones
+    // Chain: dummy → live nodes
+    let html = '<div class="ll-row">';
+
+    nodes.forEach((node, idx) => {
+      const isRemoved = removed.has(idx);
+      const isCurr = !isRemoved && node.id === currIdx;
+      const isDummy = idx === 0;
+      const isTarget = !isRemoved && node.val === VAL;
+
+      let nodeClass = 'll-node';
+      if (isDummy) nodeClass += ' dummy';
+      else if (isCurr) nodeClass += ' curr';
+      else if (isTarget && !isRemoved) nodeClass += ' target';
+
+      let opacity = isRemoved ? 'opacity:.25;' : '';
+      let label = isDummy ? 'dummy' : (isCurr ? 'curr' : '');
+
+      // Show arrow before node (except first)
+      if (idx > 0) {
+        html += `<span class="ll-arrow" style="${opacity}">${isRemoved ? '✕' : '→'}</span>`;
+      }
+
+      html += `<div class="ll-node-wrap" style="${opacity}">`;
+      html += `<div class="${nodeClass}">`;
+      html += `<span class="ll-val">${isDummy ? '0' : node.val}</span>`;
+      html += `<span class="ll-ptr">→</span>`;
+      html += `</div>`;
+      if (label) html += `<div class="ll-label">${label}</div>`;
+      html += `</div>`;
+    });
+
+    // null terminator
+    html += '<span class="ll-arrow">→</span><span class="ll-null">null</span>';
+    html += '</div>';
+
+    // If done, show result list
+    if (done) {
+      html += '<div style="margin-top:12px;font-size:.85rem;color:var(--muted);">Result:</div>';
+      html += '<div class="ll-row">';
+      nodes.forEach((node, idx) => {
+        if (idx === 0) return; // skip dummy
+        if (removed.has(idx)) return;
+        if (idx > 1) html += '<span class="ll-arrow">→</span>';
+        html += `<div class="ll-node-wrap"><div class="ll-node curr"><span class="ll-val">${node.val}</span><span class="ll-ptr">→</span></div></div>`;
+      });
+      html += '<span class="ll-arrow">→</span><span class="ll-null">null</span>';
+      html += '</div>';
+    }
+
+    viz.innerHTML = html;
+  }
+
+  document.getElementById('ll-next').addEventListener('click', step);
+  document.getElementById('ll-reset').addEventListener('click', reset);
+
+  // Init
+  buildNextMap();
+  render('Click "Next step" to begin.');
+})();
+</script>
+
+</body>
+</html>
