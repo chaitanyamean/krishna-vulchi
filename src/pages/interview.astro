@@ -1,0 +1,303 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { topics } from '../data/interview';
+---
+
+<Layout
+  title="Interview Questions — Krishna Chaitanya Vulchi"
+  description="Detailed interview Q&A covering Java Streams, Collections, Core Java, OOP, JVM, and Concurrency."
+>
+  <section class="wrap wrap--wide">
+    <p class="eyebrow">interview prep</p>
+    <h1>Interview Questions</h1>
+    <p class="page-intro">
+      Pick a topic from the dropdown. Questions are numbered from 1 within each topic.
+      More topics — Spring Boot, Redis, PostgreSQL, DevOps — coming soon.
+    </p>
+
+    <!-- Topic selector -->
+    <div class="selector-row">
+      <label for="topic-select" class="selector-label">Topic</label>
+      <select id="topic-select" class="topic-select" aria-label="Select a topic">
+        {topics.map((t) => (
+          <option value={t.id}>{t.label}</option>
+        ))}
+      </select>
+    </div>
+
+    <!-- Question list — all topics rendered, JS shows/hides -->
+    <div id="questions-container">
+      {topics.map((topic) => (
+        <div
+          class="topic-panel"
+          data-topic={topic.id}
+          aria-hidden="true"
+          hidden
+        >
+          {topic.questions.map((item, idx) => (
+            <details class="question-item">
+              <summary class="question-summary">
+                <span class="q-number">{idx + 1}.</span>
+                <span class="q-text">{item.q}</span>
+              </summary>
+              <div class="answer" data-raw={item.a}></div>
+            </details>
+          ))}
+        </div>
+      ))}
+    </div>
+  </section>
+</Layout>
+
+<style>
+  h1 { margin: 10px 0 12px; font-size: 2rem; }
+
+  .page-intro {
+    color: var(--ink-dim);
+    max-width: 64ch;
+    margin-bottom: 32px;
+    font-size: 0.95rem;
+  }
+
+  /* ── selector ── */
+  .selector-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .selector-label {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--amber);
+  }
+
+  .topic-select {
+    appearance: none;
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    padding: 10px 40px 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    min-width: 280px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23e3a23c' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    transition: border-color 0.15s;
+  }
+
+  .topic-select:hover,
+  .topic-select:focus {
+    border-color: var(--amber);
+    outline: none;
+  }
+
+  /* ── questions ── */
+  .topic-panel { display: none; }
+  .topic-panel.active { display: block; }
+
+  .question-item {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .question-item:first-child {
+    border-top: 1px solid var(--line);
+  }
+
+  .question-summary {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 18px 4px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .question-summary::-webkit-details-marker { display: none; }
+
+  .question-summary::before {
+    content: '▸';
+    font-size: 0.75rem;
+    color: var(--amber);
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+
+  details[open] > .question-summary::before {
+    content: '▾';
+  }
+
+  .question-summary:hover .q-text {
+    color: var(--amber);
+  }
+
+  .q-number {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--amber);
+    flex-shrink: 0;
+    min-width: 28px;
+  }
+
+  .q-text {
+    font-size: 1rem;
+    color: var(--ink);
+    line-height: 1.4;
+    transition: color 0.15s;
+  }
+
+  /* ── answer ── */
+  .answer {
+    padding: 4px 0 24px 38px;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .answer p { margin: 8px 0; }
+
+  .answer strong { color: var(--ink); }
+
+  .answer code {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-family: var(--mono);
+    color: var(--ink);
+  }
+
+  .answer pre {
+    background: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 14px 18px;
+    overflow-x: auto;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    margin: 12px 0;
+  }
+
+  .answer pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  /* ── tables ── */
+  .answer table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    font-size: 0.88rem;
+  }
+
+  .answer th,
+  .answer td {
+    border: 1px solid var(--line);
+    padding: 7px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .answer th {
+    background: var(--bg-raised);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+  }
+
+  .answer ul,
+  .answer ol {
+    padding-left: 20px;
+    margin: 8px 0;
+  }
+
+  .answer li { margin: 4px 0; }
+</style>
+
+<script>
+  // ── show first topic on load ──────────────────────────────────────────
+  const select = document.getElementById('topic-select') as HTMLSelectElement;
+  const panels = document.querySelectorAll<HTMLElement>('.topic-panel');
+
+  function showTopic(id: string) {
+    panels.forEach((p) => {
+      const isMatch = p.dataset.topic === id;
+      p.hidden = !isMatch;
+      p.classList.toggle('active', isMatch);
+      p.setAttribute('aria-hidden', String(!isMatch));
+    });
+  }
+
+  // Show first topic on load
+  if (select.options.length > 0) {
+    showTopic(select.options[0].value);
+  }
+
+  select.addEventListener('change', () => showTopic(select.value));
+
+  // ── render answer markdown ────────────────────────────────────────────
+  // Simple renderer: code fences, bold, inline code, tables, bullets
+  function renderMarkdown(raw: string): string {
+    let html = raw
+      // fenced code blocks
+      .replace(/```(\w*)\n([\s\S]*?)```/g, (_m, _lang, code) => {
+        const escaped = code
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        return `<pre><code>${escaped}</code></pre>`;
+      })
+      // tables: | header | header | \n | --- | --- | \n | cell | cell |
+      .replace(/((?:\|.+\|\n?)+)/g, (block) => {
+        const rows = block.trim().split('\n').filter(r => r.trim());
+        if (rows.length < 2) return block;
+        const isSep = (r: string) => /^\|[\s\-|]+\|$/.test(r.trim());
+        let out = '<table>';
+        let inHead = true;
+        rows.forEach((row) => {
+          if (isSep(row)) { inHead = false; return; }
+          const cells = row.split('|').filter((_, i, a) => i > 0 && i < a.length - 1);
+          if (inHead) {
+            out += '<tr>' + cells.map(c => `<th>${c.trim()}</th>`).join('') + '</tr>';
+          } else {
+            out += '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
+          }
+        });
+        out += '</table>';
+        return out;
+      })
+      // bold
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      // inline code
+      .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+      // bullet lists
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>[\s\S]*?<\/li>)/g, (m) => `<ul>${m}</ul>`)
+      // line breaks to paragraphs
+      .split(/\n\n+/)
+      .map(block => {
+        if (block.startsWith('<pre') || block.startsWith('<table') || block.startsWith('<ul')) return block;
+        if (block.trim() === '') return '';
+        return `<p>${block.replace(/\n/g, '<br>')}</p>`;
+      })
+      .join('');
+    return html;
+  }
+
+  document.querySelectorAll<HTMLElement>('.answer[data-raw]').forEach((el) => {
+    el.innerHTML = renderMarkdown(el.dataset.raw || '');
+    delete el.dataset.raw;
+  });
+</script>
