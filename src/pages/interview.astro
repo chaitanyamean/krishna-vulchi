@@ -162,7 +162,7 @@ import { topics } from '../data/interview';
     line-height: 1.7;
   }
 
-  .answer p { margin: 8px 0; }
+  .answer p { margin: 6px 0; }
 
   .answer strong { color: var(--ink); }
 
@@ -220,10 +220,10 @@ import { topics } from '../data/interview';
   .answer ul,
   .answer ol {
     padding-left: 20px;
-    margin: 8px 0;
+    margin: 6px 0;
   }
 
-  .answer li { margin: 4px 0; }
+  .answer li { margin: 2px 0; }
 </style>
 
 <script>
@@ -282,9 +282,14 @@ import { topics } from '../data/interview';
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       // inline code
       .replace(/`([^`\n]+)`/g, '<code>$1</code>')
-      // bullet lists
-      .replace(/^- (.+)$/gm, '<li>$1</li>')
-      .replace(/(<li>[\s\S]*?<\/li>)/g, (m) => `<ul>${m}</ul>`)
+      // bullet lists — group consecutive lines starting with "- " into one <ul>
+      .replace(/((?:^- .+\n?)+)/gm, (block) => {
+        const items = block.trim().split('\n')
+          .filter(l => l.startsWith('- '))
+          .map(l => `<li>${l.slice(2)}</li>`)
+          .join('');
+        return `<ul>${items}</ul>`;
+      })
       // line breaks to paragraphs
       .split(/\n\n+/)
       .map(block => {
