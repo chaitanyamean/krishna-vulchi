@@ -3004,7 +3004,7 @@ EventBridge is essentially a serverless event router with schema discovery and r
 | Cost | ~$0.40/secret/month | Free (Standard) | Per key + API calls |
 | Use for | DB passwords, API keys needing rotation | App config, non-sensitive params | Encrypting data, envelopes |
 
-**Secrets Manager:** use for database credentials, API keys, OAuth tokens — anything that needs rotation. Spring Boot integration via `spring-cloud-aws`.
+**Secrets Manager:** use for database credentials, API keys, OAuth tokens — anything that needs rotation. Spring Boot integration via \`spring-cloud-aws\`.
 
 **SSM Parameter Store:** use for non-sensitive config (feature flags, endpoint URLs) and sensitive values that don't rotate. SecureString parameters are encrypted with KMS.
 
